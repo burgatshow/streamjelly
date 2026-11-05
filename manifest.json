@@ -10,11 +10,11 @@
     "versions": [
       {
         "version": "1.6.0.0",
-        "changelog": "#### Added\n- English user interface. The dashboard page follows the Jellyfin display language: Hungarian for Hungarian, English for every other language. All labels, states, transcode reasons, messages and number formats (decimal separator, time) are translated.\n\n#### Changed\n- Plugin description (`meta.json`, plugin list) is now in English.\n- API: the descriptive texts of the per-stream decisions (`to`, `note`) are now in English; the API is language independent.\n- `build.sh` comments in English.",
+        "changelog": "#### Added\n- English user interface. The dashboard page follows the Jellyfin display language: Hungarian for Hungarian, English for every other language. All labels, states, transcode reasons, messages and number formats (decimal separator, time) are translated.\n\n#### Changed\n- Plugin description (`meta.json`, plugin list) is now in English.\n- API: the descriptive texts of the per-stream decisions (`to`, `note`) are now in English; the API is language independent.\n- `build.sh` comments in English.\n- `meta.json`: `autoUpdate` is now `true`, so Jellyfin's *Update Plugins* task installs new versions from the repository.",
         "targetAbi": "12.4.0.0",
         "sourceUrl": "https://github.com/burgatshow/streamjelly/releases/download/v1.6.0/streamjelly_1.6.0.0.zip",
-        "checksum": "77d33b5c41b98a97cec3e7ffa2329abe",
-        "timestamp": "2026-11-05T22:09:54.0000000Z"
+        "checksum": "1fdee60f26cad51ee4a0b47142518806",
+        "timestamp": "2026-11-05T22:15:08.0000000Z"
       },
       {
         "version": "1.5.0.0",
