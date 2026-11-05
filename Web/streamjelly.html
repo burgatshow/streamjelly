@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="utf-8">
+    <title>StreamJelly</title>
+</head>
+<body>
+<div id="StreamJellyPage" data-role="page" class="page type-interior pluginConfigurationPage" data-title="StreamJelly">
+<style>
+#StreamJellyPage {
+    --si-text: #eceef1;
+    --si-muted: #9198a1;
+    --si-faint: rgba(255,255,255,.07);
+    --si-line: rgba(255,255,255,.10);
+    --si-surface: rgba(255,255,255,.035);
+    --si-direct: #3fd68f;
+    --si-copy: #5aa9ff;
+    --si-transcode: #ffb23f;
+    --si-burn: #ff6f61;
+    --si-hw: #b896ff;
+    --si-brand: #00a4dc;
+}
+#StreamJellyPage .si { max-width: 1280px; margin: 0 auto; padding: 1.6em 1.6em 4em; color: var(--si-text); font-variant-numeric: tabular-nums; }
+#StreamJellyPage .si * { box-sizing: border-box; }
+
+/* ---------- top bar ---------- */
+#StreamJellyPage .si-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.2em 2.5em; margin-bottom: 2em; }
+#StreamJellyPage .si-bar h1 { font-size: 1.9em; font-weight: 700; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
+#StreamJellyPage .si-bar .si-sub { color: var(--si-muted); font-size: .9em; margin-top: .35em; }
+#StreamJellyPage .si-totals { display: flex; gap: 2.2em; margin-left: auto; }
+#StreamJellyPage .si-total b { display: block; font-size: 1.6em; font-weight: 650; line-height: 1.1; }
+#StreamJellyPage .si-total span { color: var(--si-muted); font-size: .82em; }
+#StreamJellyPage .si-total.is-transcode b { color: var(--si-transcode); }
+#StreamJellyPage .si-gear { background: none; border: 1px solid var(--si-line); color: var(--si-muted); border-radius: 8px; padding: .45em .8em; cursor: pointer; font: inherit; font-size: .85em; }
+#StreamJellyPage .si-gear:hover, #StreamJellyPage .si-gear[aria-expanded="true"] { color: var(--si-text); border-color: rgba(255,255,255,.25); }
+#StreamJellyPage .si-settings { display: none; flex-wrap: wrap; gap: 1em 1.6em; align-items: center; padding: 1em 1.2em; margin: -1em 0 2em; border: 1px solid var(--si-line); border-radius: 10px; font-size: .9em; }
+#StreamJellyPage .si-settings.open { display: flex; }
+#StreamJellyPage .si-settings label { display: flex; gap: .45em; align-items: center; color: var(--si-muted); }
+#StreamJellyPage .si-settings input[type=number] { width: 4.2em; background: var(--si-faint); border: 1px solid var(--si-line); color: var(--si-text); border-radius: 6px; padding: .3em .4em; font: inherit; }
+#StreamJellyPage .si-settings .si-save { margin-left: auto; background: var(--si-brand); color: #fff; border: 0; border-radius: 6px; padding: .5em 1.1em; font: inherit; font-weight: 600; cursor: pointer; }
+
+/* ---------- session ---------- */
+#StreamJellyPage #siSessions { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 1.1em; align-items: start; }
+#StreamJellyPage .si-session { position: relative; grid-column: 1 / -1; border-radius: 16px; overflow: hidden; margin: .4em 0 1em; background: var(--si-surface); border: 1px solid var(--si-line); }
+#StreamJellyPage .si-session.just-opened { animation: si-open .22s ease-out; }
+@keyframes si-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- compact card ---------- */
+#StreamJellyPage .si-card { display: flex; gap: 1em; padding: .85em; border-radius: 14px; background: var(--si-surface); border: 1px solid var(--si-line); cursor: pointer; color: inherit; text-align: left; transition: border-color .15s, background-color .15s; }
+#StreamJellyPage .si-card:hover { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.055); }
+#StreamJellyPage .si-card:focus-visible { outline: 2px solid var(--si-brand); outline-offset: 2px; }
+#StreamJellyPage .si-card-cover { width: 68px; aspect-ratio: 2/3; flex: none; border-radius: 7px; background: var(--si-faint) center/cover; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+#StreamJellyPage .si-card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#StreamJellyPage .si-card-title { font-size: 1.05em; font-weight: 650; line-height: 1.25; margin: .1em 0 .15em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#StreamJellyPage .si-card-top { display: flex; align-items: flex-start; gap: .6em; }
+#StreamJellyPage .si-card-top > div { flex: 1; min-width: 0; }
+#StreamJellyPage .si-card-mode { flex: none; font-size: .72em; font-weight: 700; padding: .2em .65em; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+#StreamJellyPage .si-card-sub { color: var(--si-muted); font-size: .8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#StreamJellyPage .si-card-who { font-size: .85em; color: #c9ced4; margin-top: .35em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#StreamJellyPage .si-card-who span + span::before { content: ""; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: var(--si-muted); vertical-align: middle; margin: 0 .55em; }
+#StreamJellyPage .si-card-progress { margin-top: auto; padding-top: .7em; }
+#StreamJellyPage .si-card-progress .si-track { height: 3px; }
+#StreamJellyPage .si-card-progress .t { display: flex; justify-content: space-between; font-size: .74em; color: var(--si-muted); margin-top: .35em; }
+#StreamJellyPage .si-card.is-paused .si-track b { background: var(--si-muted); }
+#StreamJellyPage .si-collapse { background: rgba(255,255,255,.08); border: 0; color: var(--si-text); border-radius: 999px; padding: .35em .9em; font: inherit; font-size: .8em; cursor: pointer; margin-bottom: .7em; }
+#StreamJellyPage .si-collapse:hover { background: rgba(255,255,255,.16); }
+#StreamJellyPage .si-hero { position: relative; display: flex; gap: 1.4em; align-items: flex-end; padding: 1.6em 1.6em 1.3em; min-height: 170px; isolation: isolate; }
+#StreamJellyPage .si-hero-bg { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center 25%; opacity: .38; }
+#StreamJellyPage .si-hero-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,18,22,.96) 0%, rgba(16,18,22,.75) 45%, rgba(16,18,22,.35) 100%), linear-gradient(0deg, rgba(16,18,22,1) 0%, rgba(16,18,22,0) 60%); }
+#StreamJellyPage .si-poster { width: 92px; aspect-ratio: 2/3; border-radius: 8px; background: var(--si-faint) center/cover; flex: none; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
+#StreamJellyPage .si-heading { min-width: 0; flex: 1; }
+#StreamJellyPage .si-series { color: var(--si-muted); font-size: .92em; margin-bottom: .15em; }
+#StreamJellyPage .si-name { font-size: 1.55em; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; margin: 0 0 .55em; }
+#StreamJellyPage .si-who { display: flex; flex-wrap: wrap; gap: .4em; }
+#StreamJellyPage .si-chip { font-size: .8em; padding: .25em .65em; border-radius: 999px; background: rgba(255,255,255,.08); color: #d5d9de; white-space: nowrap; }
+#StreamJellyPage .si-mode { text-align: right; flex: none; align-self: flex-start; }
+#StreamJellyPage .si-mode-name { display: inline-block; font-weight: 700; font-size: .95em; padding: .35em .85em; border-radius: 999px; border: 1.5px solid currentColor; }
+#StreamJellyPage .si-mode-note { color: var(--si-muted); font-size: .8em; margin-top: .45em; }
+#StreamJellyPage .m-DirectPlay { color: var(--si-direct); }
+#StreamJellyPage .m-DirectStream { color: var(--si-copy); }
+#StreamJellyPage .m-Transcode { color: var(--si-transcode); }
+#StreamJellyPage .m-Unknown { color: var(--si-muted); }
+
+#StreamJellyPage .si-time { display: flex; align-items: center; gap: .9em; padding: 0 1.6em 1.2em; font-size: .82em; color: var(--si-muted); }
+#StreamJellyPage .si-track { position: relative; flex: 1; height: 4px; border-radius: 4px; background: rgba(255,255,255,.1); overflow: hidden; }
+#StreamJellyPage .si-track i { position: absolute; inset: 0 auto 0 0; background: rgba(255,255,255,.18); }
+#StreamJellyPage .si-track b { position: absolute; inset: 0 auto 0 0; background: var(--si-brand); border-radius: 4px; }
+#StreamJellyPage .si-paused { color: var(--si-text); font-weight: 600; }
+
+/* ---------- signal path ---------- */
+#StreamJellyPage .si-path { padding: .4em 1.6em 1.4em; }
+#StreamJellyPage .si-path-head, #StreamJellyPage .si-lane { display: grid; grid-template-columns: 1fr minmax(150px, 210px) 1fr; align-items: center; }
+#StreamJellyPage .si-path-head { color: var(--si-muted); font-size: .8em; padding-bottom: .5em; }
+#StreamJellyPage .si-path-head div:last-child { text-align: right; }
+#StreamJellyPage .si-path-head div:nth-child(2) { text-align: center; }
+#StreamJellyPage .si-lane { padding: .75em 0; border-top: 1px solid var(--si-faint); --c: var(--si-muted); }
+#StreamJellyPage .si-lane.d-Direct { --c: var(--si-direct); }
+#StreamJellyPage .si-lane.d-Copy, #StreamJellyPage .si-lane.d-Separate { --c: var(--si-copy); }
+#StreamJellyPage .si-lane.d-Transcode { --c: var(--si-transcode); }
+#StreamJellyPage .si-lane.d-BurnIn { --c: var(--si-burn); }
+#StreamJellyPage .si-end .k { font-size: .75em; color: var(--si-muted); }
+#StreamJellyPage .si-end .v { font-size: 1.12em; font-weight: 650; margin: .05em 0; }
+#StreamJellyPage .si-end .s { font-size: .84em; color: #b8bec6; }
+#StreamJellyPage .si-end.out { text-align: right; }
+#StreamJellyPage .si-end.out .v { color: var(--c); }
+#StreamJellyPage .si-wire { position: relative; height: 30px; margin: 0 1em; display: flex; align-items: center; justify-content: center; }
+#StreamJellyPage .si-wire::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; transform: translateY(-50%);
+    background: repeating-linear-gradient(90deg, var(--c) 0 10px, transparent 10px 16px); opacity: .55; }
+#StreamJellyPage .si-wire::after { content: ""; position: absolute; right: -2px; top: 50%; width: 8px; height: 8px; border-top: 2px solid var(--c); border-right: 2px solid var(--c); transform: translateY(-50%) rotate(45deg); opacity: .8; }
+#StreamJellyPage .si-session.is-live .si-wire::before { animation: si-flow 1.1s linear infinite; }
+#StreamJellyPage .si-node { position: relative; z-index: 1; background: #1b1e23; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: .2em .8em; font-size: .78em; font-weight: 700; white-space: nowrap; }
+@keyframes si-flow { from { background-position: 0 0; } to { background-position: 16px 0; } }
+@media (prefers-reduced-motion: reduce) { #StreamJellyPage .si-session.is-live .si-wire::before { animation: none; } }
+
+#StreamJellyPage .si-report { padding: 0 1.6em 1.2em; font-size: .82em; color: var(--si-muted); }
+#StreamJellyPage .si-report.stale { color: #ffd08a; }
+#StreamJellyPage .si-reasons { display: flex; flex-wrap: wrap; gap: .45em; align-items: center; padding: 0 1.6em 1.3em; font-size: .85em; }
+#StreamJellyPage .si-reasons > span:first-child { color: var(--si-muted); margin-right: .2em; }
+#StreamJellyPage .si-reason { padding: .25em .7em; border-radius: 6px; background: rgba(255,178,63,.12); color: #ffd08a; }
+
+/* ---------- live numbers ---------- */
+#StreamJellyPage .si-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 1px solid var(--si-line); }
+#StreamJellyPage .si-stat { padding: 1em 1.6em; border-right: 1px solid var(--si-faint); }
+#StreamJellyPage .si-stat:last-child { border-right: 0; }
+#StreamJellyPage .si-stat b { display: block; font-size: 1.25em; font-weight: 650; }
+#StreamJellyPage .si-stat span { font-size: .78em; color: var(--si-muted); }
+#StreamJellyPage .si-stat.hw b { color: var(--si-hw); }
+#StreamJellyPage .si-stat.warn b { color: var(--si-burn); }
+
+/* ---------- details ---------- */
+#StreamJellyPage details.si-more { border-top: 1px solid var(--si-line); }
+#StreamJellyPage details.si-more > summary { list-style: none; cursor: pointer; padding: .85em 1.6em; color: var(--si-muted); font-size: .88em; user-select: none; }
+#StreamJellyPage details.si-more > summary::-webkit-details-marker { display: none; }
+#StreamJellyPage details.si-more > summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
+#StreamJellyPage details.si-more[open] > summary::before { transform: rotate(90deg); }
+#StreamJellyPage details.si-more > summary:hover { color: var(--si-text); }
+#StreamJellyPage .si-more-body { padding: 0 1.6em 1.6em; display: grid; gap: 1.6em; }
+#StreamJellyPage .si-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.6em 2.4em; }
+#StreamJellyPage .si-cols h3 { font-size: .95em; font-weight: 650; margin: 0 0 .6em; }
+#StreamJellyPage dl { display: grid; grid-template-columns: max-content 1fr; gap: .3em 1.1em; margin: 0; font-size: .88em; }
+#StreamJellyPage dt { color: var(--si-muted); }
+#StreamJellyPage dd { margin: 0; word-break: break-word; }
+#StreamJellyPage .si-table-wrap { overflow-x: auto; }
+#StreamJellyPage table { width: 100%; border-collapse: collapse; font-size: .85em; }
+#StreamJellyPage th { text-align: left; font-weight: 600; color: var(--si-muted); padding: .4em .7em; border-bottom: 1px solid var(--si-line); }
+#StreamJellyPage td { padding: .5em .7em; border-bottom: 1px solid var(--si-faint); vertical-align: top; }
+#StreamJellyPage tr.on td { background: rgba(0,164,220,.08); }
+#StreamJellyPage tr.on td:first-child { box-shadow: inset 3px 0 var(--si-brand); }
+#StreamJellyPage tr.off td { color: var(--si-muted); }
+#StreamJellyPage .si-cmd { position: relative; }
+#StreamJellyPage .si-cmd pre { margin: 0; white-space: pre-wrap; word-break: break-all; font-size: .76em; line-height: 1.55; background: rgba(0,0,0,.35); padding: 2.6em 1.1em 1em; border-radius: 8px; max-height: 280px; overflow: auto; color: #c9d1d9; }
+#StreamJellyPage .si-cmd pre .opt { color: #7fc8ff; }
+#StreamJellyPage .si-copy { position: absolute; top: .5em; right: .6em; background: rgba(255,255,255,.08); color: var(--si-text); border: 0; border-radius: 6px; padding: .3em .7em; font: inherit; font-size: .75em; cursor: pointer; }
+
+#StreamJellyPage .si-empty { text-align: center; padding: 5em 1em; color: var(--si-muted); }
+#StreamJellyPage .si-empty b { display: block; color: var(--si-text); font-size: 1.2em; margin-bottom: .4em; }
+#StreamJellyPage .si-error { padding: 1em 1.2em; border-radius: 10px; background: rgba(255,111,97,.12); color: #ffb3aa; margin-bottom: 1.5em; }
+#StreamJellyPage button:focus-visible, #StreamJellyPage summary:focus-visible, #StreamJellyPage input:focus-visible { outline: 2px solid var(--si-brand); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+    #StreamJellyPage .si { padding: 1em .8em 3em; }
+    #StreamJellyPage .si-totals { margin-left: 0; }
+    #StreamJellyPage .si-hero { flex-wrap: wrap; padding: 1.2em; }
+    #StreamJellyPage .si-poster { width: 64px; }
+    #StreamJellyPage .si-mode { text-align: left; width: 100%; }
+    #StreamJellyPage .si-path, #StreamJellyPage .si-time, #StreamJellyPage .si-reasons { padding-left: 1.2em; padding-right: 1.2em; }
+    #StreamJellyPage .si-path-head { display: none; }
+    #StreamJellyPage .si-lane { grid-template-columns: 1fr; gap: .4em; }
+    #StreamJellyPage .si-end.out { text-align: left; }
+    #StreamJellyPage .si-wire { margin: 0; justify-content: flex-start; }
+}
+</style>
+
+<div data-role="content">
+<div class="content-primary si">
+
+    <header class="si-bar">
+        <div>
+            <h1>StreamJelly</h1>
+            <div class="si-sub" id="siStatus">Betöltés…</div>
+        </div>
+        <div class="si-totals" id="siTotals"></div>
+        <button type="button" class="si-gear" id="siGear" aria-expanded="false" aria-controls="siSettings">Beállítások</button>
+    </header>
+
+    <div class="si-settings" id="siSettings">
+        <label><input type="checkbox" id="siAuto" checked> Automatikus frissítés</label>
+        <label>Gyakoriság <input type="number" id="siInterval" min="1" max="60" value="3"> mp</label>
+        <label><input type="checkbox" id="siShowPaths"> Fájlútvonalak mutatása</label>
+        <label><input type="checkbox" id="siShowCmd"> ffmpeg parancs mutatása</label>
+        <button type="button" class="si-save" id="siSave">Mentés</button>
+    </div>
+
+    <div id="siError"></div>
+    <div id="siSessions"></div>
+</div>
+</div>
+
+<script type="text/javascript">
+(function () {
+    var pluginId = '7cbb0962-443d-4821-92f1-86085e90ded5';
+    var page = document.getElementById('StreamJellyPage');
+    var timer = null;
+    var prevBytes = {};
+    var rates = {};
+    var openState = {};
+    var expanded = {};
+    var justOpened = null;
+    var lastList = [];
+
+    function card(s) {
+        var pct = s.runTimeTicks ? Math.min(100, 100 * (s.positionTicks || 0) / s.runTimeTicks) : 0;
+        var sub = s.seriesName ? s.seriesName + ', ' + s.seasonNumber + '. évad ' + s.episodeNumber + '. rész' : (s.productionYear || '');
+        var mode = (s.output || {}).mode || 'Unknown';
+        var cover = s.posterItemId ? ApiClient.getUrl('Items/' + s.posterItemId + '/Images/Primary', { maxHeight: 220, quality: 85 }) : '';
+        return '<div class="si-card' + (s.isPaused ? ' is-paused' : '') + '" role="button" tabindex="0" aria-expanded="false" data-toggle="' + esc(s.sessionId) + '" title="Részletek megnyitása">'
+            + '<div class="si-card-cover"' + (cover ? ' style="background-image:url(\'' + cover + '\')"' : '') + '></div>'
+            + '<div class="si-card-main">'
+            + '<div class="si-card-top"><div>'
+            + (sub ? '<div class="si-card-sub">' + esc(sub) + '</div>' : '')
+            + '<div class="si-card-title">' + esc(s.itemName) + '</div></div>'
+            + '<span class="si-card-mode m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</span></div>'
+            + '<div class="si-card-who">' + (s.userName ? '<span>' + esc(s.userName) + '</span>' : '') + '<span>' + esc(join([s.client, s.deviceName], ', ')) + '</span></div>'
+            + '<div class="si-card-progress"><div class="si-track"><b style="width:' + pct.toFixed(1) + '%"></b></div>'
+            + '<div class="t"><span>' + clock(s.positionTicks) + '</span><span>' + clock(s.runTimeTicks) + '</span></div></div>'
+            + '</div></div>';
+    }
+    function render() {
+        page.querySelector('#siSessions').innerHTML = lastList.length
+            ? lastList.map(function (s) { return expanded[s.sessionId] ? session(s) : card(s); }).join('')
+            : '<div class="si-empty" style="grid-column:1/-1"><b>Most senki nem néz semmit</b>Amint elindul egy lejátszás, itt látod, mit kap a kliens.</div>';
+        justOpened = null;
+    }
+    function toggle(id) {
+        remember();
+        expanded[id] = !expanded[id];
+        justOpened = expanded[id] ? id : null;
+        render();
+        var el = page.querySelector('[data-toggle="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]');
+        if (el) el.focus({ preventScroll: !expanded[id] });
+    }
+
+    /* ---------- formatting ---------- */
+    function esc(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function mbps(bps) {
+        if (!bps) return '';
+        return bps >= 1e6 ? (bps / 1e6).toFixed(bps >= 1e7 ? 0 : 1).replace('.', ',') + ' Mbps' : Math.round(bps / 1e3) + ' kbps';
+    }
+    function bytes(b) {
+        if (b === null || b === undefined) return '';
+        var u = ['B', 'KB', 'MB', 'GB', 'TB'], i = 0;
+        while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
+        return b.toFixed(i > 1 ? 1 : 0).replace('.', ',') + ' ' + u[i];
+    }
+    function clock(t) {
+        if (t === null || t === undefined) return '–';
+        var s = Math.floor(t / 1e7), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+        return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0');
+    }
+    function fps(f) { return f ? (+f).toFixed(3).replace(/\.?0+$/, '').replace('.', ',') + ' fps' : ''; }
+    var codecNames = {
+        hevc: 'HEVC', h265: 'HEVC', h264: 'H.264', avc: 'H.264', av1: 'AV1', vp9: 'VP9', vp8: 'VP8', mpeg2video: 'MPEG-2', mpeg4: 'MPEG-4', vc1: 'VC-1',
+        aac: 'AAC', ac3: 'Dolby Digital', eac3: 'Dolby Digital+', truehd: 'Dolby TrueHD', dts: 'DTS', 'dts-hd': 'DTS-HD', dca: 'DTS', mp3: 'MP3', opus: 'Opus', flac: 'FLAC', vorbis: 'Vorbis', alac: 'ALAC', pcm_s16le: 'PCM', pcm_s24le: 'PCM',
+        pgssub: 'PGS', pgs: 'PGS', subrip: 'SRT', srt: 'SRT', ass: 'ASS', ssa: 'SSA', webvtt: 'WebVTT', vtt: 'WebVTT', dvdsub: 'VobSub', dvd_subtitle: 'VobSub', dvbsub: 'DVB', mov_text: 'TX3G'
+    };
+    function codec(c) { return c ? (codecNames[String(c).toLowerCase()] || String(c).toUpperCase()) : ''; }
+    function res(w, h) {
+        if (!w || !h) return '';
+        if (w >= 3800 || h >= 2100) return '4K';
+        if (w >= 2500 || h >= 1400) return '1440p';
+        if (w >= 1900 || h >= 1000) return '1080p';
+        if (w >= 1260 || h >= 700) return '720p';
+        return h + 'p';
+    }
+    function channels(n, layout) {
+        if (layout) return layout.replace('(side)', '');
+        if (!n) return '';
+        return { 1: 'mono', 2: 'sztereó', 6: '5.1', 8: '7.1' }[n] || n + ' csatorna';
+    }
+    function range(rt) { return rt && rt !== 'Unknown' && rt !== 'SDR' ? rt.replace('DOVI', 'Dolby Vision') : ''; }
+    function join(arr, sep) { return arr.filter(function (x) { return x !== null && x !== undefined && x !== ''; }).join(sep || '  ·  '); }
+
+    var modeName = { DirectPlay: 'Közvetlen lejátszás', DirectStream: 'Remux', Transcode: 'Átkódolás', Unknown: 'Ismeretlen' };
+    var modeNote = {
+        DirectPlay: 'A kliens az eredeti fájlt kapja',
+        DirectStream: 'Új konténer, a stream-ek változatlanok',
+        Transcode: 'A szerver újrakódol'
+    };
+    var nodeName = { Direct: 'eredeti', Copy: 'másolás', Transcode: 'átkódolás', BurnIn: 'beégetés', Separate: 'külön', None: '–' };
+    var kindName = { Video: 'Videó', Audio: 'Hang', Subtitle: 'Felirat' };
+    var reasonName = {
+        ContainerNotSupported: 'konténer', VideoCodecNotSupported: 'videó kodek', AudioCodecNotSupported: 'hang kodek',
+        SubtitleCodecNotSupported: 'felirat formátum', AudioIsExternal: 'külső hangsáv', SecondaryAudioNotSupported: 'másodlagos hangsáv',
+        VideoProfileNotSupported: 'videó profil', VideoLevelNotSupported: 'videó level', VideoResolutionNotSupported: 'felbontás',
+        VideoBitDepthNotSupported: 'bitmélység', VideoFramerateNotSupported: 'képkockasebesség', RefFramesNotSupported: 'referencia frame-ek',
+        AnamorphicVideoNotSupported: 'anamorf kép', InterlacedVideoNotSupported: 'váltottsoros kép', AudioChannelsNotSupported: 'csatornaszám',
+        AudioProfileNotSupported: 'hang profil', AudioSampleRateNotSupported: 'mintavétel', AudioBitDepthNotSupported: 'hang bitmélység',
+        ContainerBitrateExceedsLimit: 'bitráta-limit', VideoBitrateNotSupported: 'videó bitráta', AudioBitrateNotSupported: 'hang bitráta',
+        UnknownVideoStreamInfo: 'ismeretlen videó', UnknownAudioStreamInfo: 'ismeretlen hang', DirectPlayError: 'lejátszási hiba',
+        VideoRangeTypeNotSupported: 'HDR / Dolby Vision', VideoCodecTagNotSupported: 'kodek tag', StreamCountExceedsLimit: 'túl sok stream'
+    };
+
+    /* ---------- lanes ---------- */
+    function active(src, type) {
+        return src && src.streams ? src.streams.filter(function (s) { return s.isActive && s.type === type; })[0] : null;
+    }
+    function sourceEnd(type, st) {
+        if (!st) return { v: '–', s: '' };
+        if (type === 'Video') return { v: join([res(st.width, st.height), codec(st.codec), range(st.videoRangeType)], ' '), s: join([st.profile, st.bitDepth ? st.bitDepth + ' bit' : '', fps(st.frameRate), mbps(st.bitRate)]) };
+        if (type === 'Audio') return { v: join([codec(st.codec), channels(st.channels, st.channelLayout)], ' '), s: join([st.language, st.profile && st.profile !== st.codec ? st.profile : '', mbps(st.bitRate)]) };
+        return { v: codec(st.codec), s: join([st.title || st.language, st.isForced ? 'kényszerített' : '', st.isExternal ? 'külső fájl' : '']) };
+    }
+    function outEnd(type, d, s, st, hints) {
+        var o = s.output || {};
+        if (d.decision === 'Direct' || d.decision === 'Copy') {
+            var e = sourceEnd(type, st);
+            return { v: e.v, s: d.decision === 'Copy' ? 'változatlanul, ' + (o.container || '') + ' konténerben' : 'változatlanul' };
+        }
+        if (type === 'Video') return { v: join([res(o.width, o.height), codec(o.videoCodec)], ' '), s: join([hints && hints.videoEncoder, fps(o.framerate), hints && hints.toneMapping ? 'HDR → SDR' : '', d.decision === 'BurnIn' ? 'felirattal' : ''], '  ·  ') };
+        if (type === 'Audio') return { v: join([codec(o.audioCodec), channels(o.audioChannels)], ' '), s: join([hints && hints.audioEncoder, hints && hints.audioBitrate ? mbps(+hints.audioBitrate) : '']) };
+        if (d.decision === 'BurnIn') return { v: 'a képbe égetve', s: 'emiatt a videót is újra kell kódolni' };
+        return { v: 'külön stream', s: 'a kliens rajzolja ki' };
+    }
+    function lanes(s) {
+        var hints = s.jobs && s.jobs[0] ? s.jobs[0].hints : null;
+        var h = '<div class="si-path"><div class="si-path-head"><div>Forrás</div><div>Szerver</div><div>Kliens kapja</div></div>';
+        (s.decisions || []).forEach(function (d) {
+            var st = active(s.source, d.type);
+            var a = sourceEnd(d.type, st), b = outEnd(d.type, d, s, st, hints);
+            h += '<div class="si-lane d-' + esc(d.decision) + '">'
+                + '<div class="si-end src"><div class="k">' + esc(kindName[d.type] || d.type) + (d.sourceIndex !== undefined && d.sourceIndex !== null ? ' #' + d.sourceIndex : '') + '</div>'
+                + '<div class="v">' + esc(a.v) + '</div><div class="s">' + esc(a.s) + '</div></div>'
+                + '<div class="si-wire"><span class="si-node">' + esc(nodeName[d.decision] || d.decision) + '</span></div>'
+                + '<div class="si-end out"><div class="k">' + esc(kindName[d.type] || d.type) + '</div>'
+                + '<div class="v">' + esc(b.v) + '</div><div class="s">' + esc(b.s) + '</div></div>'
+                + '</div>';
+        });
+        return h + '</div>';
+    }
+
+    /* ---------- one session ---------- */
+    function session(s) {
+        var o = s.output || {};
+        var mode = o.mode || 'Unknown';
+        var job = s.jobs && s.jobs[0];
+        var pct = s.runTimeTicks ? Math.min(100, 100 * (s.positionTicks || 0) / s.runTimeTicks) : 0;
+        var buf = job && job.transcodingPositionTicks && s.runTimeTicks ? Math.min(100, 100 * job.transcodingPositionTicks / s.runTimeTicks) : 0;
+        var vSrc = active(s.source, 'Video');
+        var title = s.itemName || '';
+        var sub = s.seriesName ? s.seriesName + '  ·  ' + s.seasonNumber + '. évad ' + s.episodeNumber + '. rész' : (s.productionYear || '');
+
+        var h = '<article class="si-session' + (s.isPaused ? '' : ' is-live') + (justOpened === s.sessionId ? ' just-opened' : '') + '">';
+        h += '<div class="si-hero">';
+        if (s.backdropItemId) h += '<div class="si-hero-bg" style="background-image:url(\'' + ApiClient.getUrl('Items/' + s.backdropItemId + '/Images/Backdrop', { maxWidth: 1280, quality: 70 }) + '\')"></div>';
+        if (s.posterItemId) h += '<div class="si-poster" style="background-image:url(\'' + ApiClient.getUrl('Items/' + s.posterItemId + '/Images/Primary', { maxHeight: 300, quality: 85 }) + '\')"></div>';
+        h += '<div class="si-heading">';
+        if (sub) h += '<div class="si-series">' + esc(sub) + '</div>';
+        h += '<h2 class="si-name">' + esc(title) + '</h2>';
+        h += '<div class="si-who">'
+            + (s.userName ? '<span class="si-chip">' + esc(s.userName) + '</span>' : '')
+            + '<span class="si-chip">' + esc(join([s.client, s.applicationVersion], ' ')) + '</span>'
+            + (s.deviceName ? '<span class="si-chip">' + esc(s.deviceName) + '</span>' : '')
+            + (s.remoteEndPoint ? '<span class="si-chip">' + esc(s.remoteEndPoint) + '</span>' : '')
+            + '</div></div>';
+        h += '<div class="si-mode"><button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">Összecsukás</button><br><div class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</div>'
+            + '<div class="si-mode-note">' + esc(modeNote[mode] || '') + '</div></div>';
+        h += '</div>';
+
+        h += '<div class="si-time">' + (s.isPaused ? '<span class="si-paused">Szünetel</span>' : '')
+            + '<span>' + clock(s.positionTicks) + '</span>'
+            + '<div class="si-track" title="Lejátszás' + (buf ? ' / átkódolva' : '') + '"><i style="width:' + buf.toFixed(1) + '%"></i><b style="width:' + pct.toFixed(1) + '%"></b></div>'
+            + '<span>' + clock(s.runTimeTicks) + '</span></div>';
+
+        h += lanes(s);
+        h += report(s);
+
+        if (o.transcodeReasons && o.transcodeReasons.length) {
+            h += '<div class="si-reasons"><span>A kliens nem támogatja:</span>'
+                + o.transcodeReasons.map(function (r) { return '<span class="si-reason">' + esc(reasonName[r] || r) + '</span>'; }).join('') + '</div>';
+        }
+
+        // live numbers
+        var stats = [];
+        var rate = job ? rates[job.id || s.sessionId] : null;
+        if (rate) stats.push(['Most a kliens felé', mbps(rate)]);
+        var cont = o.container || (s.source && s.source.container);
+        if (cont) stats.push(['Konténer', String(cont).split(',')[0].toUpperCase()]);
+        stats.push([job ? 'Cél bitráta' : 'Fájl bitrátája', mbps(o.bitrate || (s.source && s.source.bitrate)) || '–']);
+        if (job) {
+            if (job.framerate) {
+                var speed = vSrc && vSrc.frameRate ? job.framerate / vSrc.frameRate : null;
+                stats.push(['Kódolási sebesség', speed ? speed.toFixed(1).replace('.', ',') + '×' : fps(job.framerate), speed && speed < 1.05 && !s.isPaused ? 'warn' : '']);
+            }
+            if (job.transcodingPositionTicks && s.positionTicks !== undefined) {
+                var ahead = (job.transcodingPositionTicks - (s.positionTicks || 0)) / 1e7;
+                stats.push(['Előre átkódolva', ahead >= 90 ? Math.round(ahead / 60) + ' perc' : Math.max(0, Math.round(ahead)) + ' mp', ahead < 10 && !s.isPaused ? 'warn' : '']);
+            }
+            stats.push(['Kliens letöltött', bytes(job.bytesDownloaded)]);
+        }
+        if (o.hardwareAcceleration && o.hardwareAcceleration.toLowerCase() !== 'none') stats.push(['Hardveres gyorsítás', o.hardwareAcceleration.toUpperCase(), 'hw']);
+        else if (job && mode === 'Transcode') stats.push(['Hardveres gyorsítás', 'nincs (CPU)']);
+        h += '<div class="si-stats">' + stats.map(function (x) {
+            return '<div class="si-stat' + (x[2] ? ' ' + x[2] : '') + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[0]) + '</span></div>';
+        }).join('') + '</div>';
+
+        // details
+        var did = 'more-' + s.sessionId;
+        h += '<details class="si-more" data-did="' + esc(did) + '"' + (openState[did] ? ' open' : '') + '><summary>Részletek: összes stream, fájl és ffmpeg</summary><div class="si-more-body">';
+        h += '<div class="si-cols">';
+        var src = s.source;
+        if (src) {
+            h += '<div><h3>Forrásfájl</h3><dl>'
+                + dl('Konténer', src.container) + dl('Méret', bytes(src.size)) + dl('Bitráta', mbps(src.bitrate))
+                + dl('Típus', src.videoType) + dl('Protokoll', src.protocol)
+                + dl('Lejátszható', join([src.supportsDirectPlay ? 'közvetlenül' : '', src.supportsDirectStream ? 'remuxszal' : '', src.supportsTranscoding ? 'átkódolva' : ''], ', '))
+                + dl('Útvonal', src.path) + '</dl></div>';
+        }
+        h += '<div><h3>Kimenet</h3><dl>'
+            + dl('Konténer', o.container) + dl('Videó', codec(o.videoCodec)) + dl('Felbontás', o.width && o.height ? o.width + ' × ' + o.height : '')
+            + dl('Képkocka', fps(o.framerate)) + dl('Hang', codec(o.audioCodec)) + dl('Csatornák', channels(o.audioChannels))
+            + dl('Bitráta', mbps(o.bitrate)) + '</dl></div>';
+        if (job) {
+            var hi = job.hints || {};
+            h += '<div><h3>ffmpeg</h3><dl>'
+                + dl('Folyamat', join([job.type === 'Hls' ? 'HLS' : job.type, job.processId ? 'PID ' + job.processId : ''], ', '))
+                + dl('Videó encoder', join([hi.videoEncoder, hi.preset ? 'preset ' + hi.preset : '', hi.crf ? 'CRF ' + hi.crf : ''], ', '))
+                + dl('Videó bitráta', join([hi.videoBitrate ? mbps(+hi.videoBitrate) : '', hi.maxRate ? 'max ' + mbps(+hi.maxRate) : ''], ', '))
+                + dl('Hang encoder', join([hi.audioEncoder, hi.audioBitrate ? mbps(+hi.audioBitrate) : '', hi.audioChannels ? hi.audioChannels + ' csatorna' : ''], ', '))
+                + dl('Szegmensek', join([hi.segmentFormat, hi.segmentLength ? hi.segmentLength + ' mp' : ''], ', '))
+                + dl('Átkódolt adat', bytes(job.bytesTranscoded))
+                + dl('Throttling', job.throttlingEnabled ? 'bekapcsolva' : '')
+                + dl('Kimeneti fájl', job.outputPath) + '</dl></div>';
+        }
+        h += '</div>';
+
+        if (src && src.streams && src.streams.length) {
+            h += '<div><div class="si-table-wrap"><table><thead><tr><th>#</th><th>Típus</th><th>Formátum</th><th>Nyelv</th><th>Cím</th><th>Jellemzők</th></tr></thead><tbody>';
+            src.streams.forEach(function (st) {
+                h += '<tr class="' + (st.isActive ? 'on' : 'off') + '"><td>' + st.index + '</td><td>' + esc(kindName[st.type] || st.type) + '</td>'
+                    + '<td>' + esc(join([codec(st.codec), st.profile], ' ')) + '</td><td>' + esc(st.language) + '</td><td>' + esc(st.title || '') + '</td>'
+                    + '<td>' + esc(features(st)) + '</td></tr>';
+            });
+            h += '</tbody></table></div></div>';
+        }
+
+        if (job && job.ffmpegCommand) {
+            h += '<div class="si-cmd"><button type="button" class="si-copy" data-cmd="' + esc(job.ffmpegCommand) + '">Másolás</button><pre>'
+                + esc(job.ffmpegCommand).replace(/(^|\s)(-[a-z_:0-9]+)/gi, '$1<span class="opt">$2</span>') + '</pre></div>';
+        }
+        h += '</div></details></article>';
+        return h;
+    }
+    function report(s) {
+        if (!s.hasProgressReport) return '<div class="si-report stale">A kliens még nem küldött lejátszási jelentést, ezért nem tudni, melyik hang- és feliratsáv aktív.</div>';
+        var ago = Math.max(0, Math.round((Date.now() - new Date(s.lastReportUtc).getTime()) / 1000));
+        var subOff = s.selectedSubtitleIndex === null || s.selectedSubtitleIndex === undefined || s.selectedSubtitleIndex < 0;
+        var txt = 'A kliens utolsó jelentése ' + (ago < 60 ? ago + ' mp' : Math.round(ago / 60) + ' perc') + ' ezelőtt: hangsáv '
+            + (s.selectedAudioIndex !== null && s.selectedAudioIndex !== undefined ? '#' + s.selectedAudioIndex : 'nincs megadva')
+            + ', felirat ' + (subOff ? 'kikapcsolva' : '#' + s.selectedSubtitleIndex) + '.';
+        if (ago > 30 && !s.isPaused) txt += ' Ha azóta váltottál sávot, a következő jelentésig ez nem látszik.';
+        return '<div class="si-report' + (ago > 30 && !s.isPaused ? ' stale' : '') + '">' + esc(txt) + '</div>';
+    }
+    function dl(k, v) { return v ? '<dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd>' : ''; }
+    function features(st) {
+        var p = [];
+        if (st.type === 'Video') p = [st.width && st.height ? st.width + '×' + st.height + (st.isInterlaced ? 'i' : 'p') : '', fps(st.frameRate), st.bitDepth ? st.bitDepth + ' bit' : '', range(st.videoRangeType), st.dvProfile ? 'DV ' + st.dvProfile : '', st.pixelFormat, mbps(st.bitRate)];
+        else if (st.type === 'Audio') p = [channels(st.channels, st.channelLayout), st.sampleRate ? (st.sampleRate / 1000).toString().replace('.', ',') + ' kHz' : '', mbps(st.bitRate)];
+        p = p.concat([st.isDefault ? 'alapértelmezett' : '', st.isForced ? 'kényszerített' : '', st.isExternal ? 'külső' : '', st.isHearingImpaired ? 'SDH' : '', st.path || '']);
+        return join(p, ', ');
+    }
+
+    /* ---------- page ---------- */
+    function remember() {
+        page.querySelectorAll('details[data-did]').forEach(function (d) { openState[d.getAttribute('data-did')] = d.open; });
+    }
+    function updateRates(list) {
+        var now = Date.now();
+        list.forEach(function (s) {
+            (s.jobs || []).forEach(function (j) {
+                var key = j.id || s.sessionId, prev = prevBytes[key];
+                if (prev && now - prev.t > 500 && j.bytesDownloaded >= prev.bytes) {
+                    var r = 8 * (j.bytesDownloaded - prev.bytes) / ((now - prev.t) / 1000);
+                    rates[key] = rates[key] ? rates[key] * 0.5 + r * 0.5 : r;
+                }
+                prevBytes[key] = { bytes: j.bytesDownloaded, t: now };
+            });
+        });
+    }
+    function totals(list) {
+        var tr = list.filter(function (s) { return (s.output || {}).mode === 'Transcode'; }).length;
+        var bw = 0;
+        list.forEach(function (s) { (s.jobs || []).forEach(function (j) { bw += rates[j.id || s.sessionId] || 0; }); });
+        return '<div class="si-total"><b>' + list.length + '</b><span>lejátszás</span></div>'
+            + '<div class="si-total' + (tr ? ' is-transcode' : '') + '"><b>' + tr + '</b><span>átkódolás</span></div>'
+            + (bw ? '<div class="si-total"><b>' + mbps(bw) + '</b><span>kimenő, átkódolt</span></div>' : '');
+    }
+
+    function load() {
+        if (!document.body.contains(page)) { stop(); return; }
+        ApiClient.getJSON(ApiClient.getUrl('StreamJelly/Sessions')).then(function (data) {
+            var list = data.sessions || [];
+            remember();
+            updateRates(list);
+            page.querySelector('#siError').innerHTML = '';
+            page.querySelector('#siTotals').innerHTML = totals(list);
+            lastList = list;
+            render();
+            page.querySelector('#siStatus').textContent = 'Jellyfin ' + (data.serverVersion || '') + ', frissítve ' + new Date(data.generatedAtUtc).toLocaleTimeString()
+                + (data.transcodeJobsAvailable ? '' : '. Az ffmpeg adatok ebben a verzióban nem olvashatók.');
+        }, function (err) {
+            page.querySelector('#siError').innerHTML = '<div class="si-error">Nem sikerült lekérni az adatokat (' + esc(err && err.status ? 'HTTP ' + err.status : err) + '). Ellenőrizd, hogy rendszergazdaként vagy-e bejelentkezve, és hogy a plugin aktív-e.</div>';
+        });
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function start() {
+        stop();
+        load();
+        if (page.querySelector('#siAuto').checked) {
+            var sec = Math.max(1, Math.min(60, parseInt(page.querySelector('#siInterval').value, 10) || 3));
+            timer = setInterval(load, sec * 1000);
+        }
+    }
+    function loadConfig() {
+        return ApiClient.getPluginConfiguration(pluginId).then(function (cfg) {
+            page.querySelector('#siInterval').value = cfg.RefreshSeconds || 3;
+            page.querySelector('#siShowPaths').checked = !!cfg.ShowPaths;
+            page.querySelector('#siShowCmd').checked = !!cfg.ShowFfmpegCommand;
+        }, function () { });
+    }
+
+    page.querySelector('#siGear').addEventListener('click', function () {
+        var p = page.querySelector('#siSettings'), open = !p.classList.contains('open');
+        p.classList.toggle('open', open);
+        this.setAttribute('aria-expanded', open);
+    });
+    page.querySelector('#siSave').addEventListener('click', function () {
+        var btn = this;
+        ApiClient.getPluginConfiguration(pluginId).then(function (cfg) {
+            cfg.RefreshSeconds = parseInt(page.querySelector('#siInterval').value, 10) || 3;
+            cfg.ShowPaths = page.querySelector('#siShowPaths').checked;
+            cfg.ShowFfmpegCommand = page.querySelector('#siShowCmd').checked;
+            return ApiClient.updatePluginConfiguration(pluginId, cfg);
+        }).then(function () {
+            btn.textContent = 'Mentve';
+            setTimeout(function () { btn.textContent = 'Mentés'; }, 1500);
+            start();
+        });
+    });
+    page.querySelector('#siAuto').addEventListener('change', start);
+    page.querySelector('#siInterval').addEventListener('change', start);
+    page.querySelector('#siSessions').addEventListener('keydown', function (e) {
+        var c = e.target.closest('.si-card[data-toggle]');
+        if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggle(c.getAttribute('data-toggle')); }
+    });
+    page.querySelector('#siSessions').addEventListener('click', function (e) {
+        var t = e.target.closest('[data-toggle]');
+        if (t) { toggle(t.getAttribute('data-toggle')); return; }
+        var b = e.target.closest('.si-copy');
+        if (!b) return;
+        navigator.clipboard.writeText(b.getAttribute('data-cmd')).then(function () {
+            b.textContent = 'Kimásolva';
+            setTimeout(function () { b.textContent = 'Másolás'; }, 1500);
+        });
+    });
+
+    page.addEventListener('pageshow', function () { loadConfig().then(start); });
+    page.addEventListener('pagehide', stop);
+    page.addEventListener('viewhide', stop);
+    loadConfig().then(start);
+})();
+</script>
+</div>
+</body>
+</html>
