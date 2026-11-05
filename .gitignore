@@ -5,3 +5,5 @@ dist/
 *.user
 .vs/
 .idea/
+release-notes.md
+streamjelly_*.zip

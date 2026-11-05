@@ -5,12 +5,14 @@
   "guid": "7cbb0962-443d-4821-92f1-86085e90ded5",
   "name": "StreamJelly",
   "overview": "Megmutatja, milyen stream-eket küld a szerver a klienseknek.",
-  "owner": "local",
+  "owner": "burgatshow",
   "targetAbi": "12.4.0.0",
   "timestamp": "2026-11-05T00:00:00.0000000Z",
   "version": "1.5.0.0",
   "status": "Active",
   "autoUpdate": false,
   "imagePath": "thumb.png",
-  "assemblies": [ "Jellyfin.Plugin.StreamJelly.dll" ]
+  "assemblies": [
+    "Jellyfin.Plugin.StreamJelly.dll"
+  ]
 }

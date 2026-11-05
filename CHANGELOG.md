@@ -17,6 +17,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 #### Added
 - Logo and icons (`assets/`); plugin card image in the dashboard's plugin list (`thumb.png`, via `imagePath` in `meta.json`). The card image keeps its content in the centre, so it is not cut off at any card width.
 
+#### Added (distribution)
+- Jellyfin plugin repository (`manifest.json`): install and update StreamJelly from the Dashboard's catalog.
+- `release.sh`: builds the release zip and release notes and adds the version to `manifest.json`; the GitHub Release is created by hand.
+
 #### Notes
 - Plugin GUID unchanged. The settings file name follows the assembly name, so settings reset to defaults after upgrading. Remove the old `StreamInspector_*` folder from the plugins directory.
 
@@ -66,6 +70,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 #### Új
 - Logó és ikonok (`assets/`); kép a vezérlőpult bővítménylistájában (`thumb.png`, a `meta.json` `imagePath` mezőjével). A kép tartalma középen van, így semmilyen kártyaszélességnél nem vágódik le.
+
+#### Új (terjesztés)
+- Jellyfin plugin-adattár (`manifest.json`): a StreamJelly a Vezérlőpult katalógusából telepíthető és frissíthető.
+- `release.sh`: elkészíti a kiadási zip-et és a kiadási megjegyzést, és felveszi a verziót a `manifest.json`-ba; a GitHub Release kézzel készül.
 
 #### Megjegyzés
 - A GUID nem változott. A beállításfájl neve a DLL nevét követi, ezért frissítés után a beállítások alapértékre állnak. A régi `StreamInspector_*` mappát töröld a plugins könyvtárból.

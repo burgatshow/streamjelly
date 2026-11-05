@@ -65,7 +65,19 @@ dotnet publish -c Release -o bin/publish
 
 ### Install
 
-1. Copy the `StreamJelly_<version>` folder into the Jellyfin plugins directory:
+#### From the plugin repository (recommended)
+
+1. Dashboard → Plugins → *Repositories* → **+**
+   - Name: `StreamJelly`
+   - URL: `https://raw.githubusercontent.com/burgatshow/streamjelly/main/manifest.json`
+2. *Catalog* → **StreamJelly** → *Install*.
+3. Restart Jellyfin. Updates then show up in the Dashboard like for any other plugin.
+
+#### Manual
+
+Download `streamjelly_<version>.zip` from [Releases](https://github.com/burgatshow/streamjelly/releases), or build it yourself, then:
+
+1. Copy the `StreamJelly_<version>` folder (or the unzipped release) into the Jellyfin plugins directory:
    - official `jellyfin/jellyfin` image: `<config>/plugins/`
    - `linuxserver/jellyfin` image: `<config>/data/plugins/`
 2. Remove the folder of the previous version, if any.
@@ -90,9 +102,16 @@ Administrator only. Returns JSON (camelCase) with every session that is playing 
 - **Active audio / subtitle track** – the server only knows what the client reports in `/Sessions/Playing/Progress` (`AudioStreamIndex`, `SubtitleStreamIndex`). If a client does not send these, the plugin cannot show the active track. A subtitle that the client downloads or reads from the file itself creates no server-side stream.
 - **ffmpeg jobs** – Jellyfin has no public API to list transcoding jobs, so the plugin reads `TranscodeManager`'s private job list via reflection. If a future version changes it, the plugin keeps working without the ffmpeg panel (the header says so).
 - **Burn-in, tone mapping** – detected from the ffmpeg filter arguments (heuristic).
-- **"An error occurred while getting the plugin details from the repository"** – shown on the plugin's page because StreamJelly is installed by hand and is not in any plugin repository. Harmless.
+- **"An error occurred while getting the plugin details from the repository"** – shown on the plugin's page when StreamJelly was installed by hand and its repository is not added. Harmless; add the repository (see Install) to get rid of it.
 - **Plugin card image not updated** – Jellyfin reads `thumb.png` from the plugin folder on every request, no restart needed; the browser caches it, so reload with Cmd+Shift+R or use a private window.
 - **Client IP shows localhost** – Jellyfin is behind a reverse proxy. Add the proxy address (usually `127.0.0.1, ::1`) to Dashboard → Networking → *Known proxies*, make sure the proxy sends `X-Forwarded-For`, then restart Jellyfin.
+
+### Releasing
+
+1. Bump the version in `Jellyfin.Plugin.StreamJelly.csproj` (`AssemblyVersion`, `FileVersion`), `meta.json` and `build.sh`, and add the version to `CHANGELOG.md`.
+2. Run `sh release.sh`. It builds the plugin (with the .NET SDK if installed, otherwise in Docker), creates `dist/streamjelly_<version>.zip` and `dist/release-notes.md`, and adds the version (download link, MD5 checksum) to `manifest.json`.
+3. On GitHub create a release with the tag `v<version>` (e.g. `v1.6.0`), use the release notes and attach the zip.
+4. Commit and push `manifest.json` (with the version bump). Jellyfin servers that use the repository then see the update.
 
 ### Project layout
 
@@ -105,6 +124,9 @@ Web/streamjelly.html          dashboard page (HTML, CSS, JS – embedded resourc
 meta.json                         plugin manifest
 assets/                           logo (SVG), icons, plugin card image (thumb.png)
 build.sh                          Docker build
+manifest.json                     Jellyfin plugin repository (updated by release.sh)
+release.sh                        release build: zip, release notes, manifest update
+scripts/release.py                helpers used by release.sh
 ```
 
 ---
@@ -164,6 +186,18 @@ A `build.sh` az eredményt a `dist/StreamJelly_<verzió>/` mappába teszi (`Jell
 
 ### Telepítés
 
+#### A plugin-adattárból (ajánlott)
+
+1. Vezérlőpult → Bővítmények → *Adattárak* → **+**
+   - Név: `StreamJelly`
+   - URL: `https://raw.githubusercontent.com/burgatshow/streamjelly/main/manifest.json`
+2. *Katalógus* → **StreamJelly** → *Telepítés*.
+3. Indítsd újra a Jellyfint. A frissítések ezután a többi pluginhoz hasonlóan a Vezérlőpulton jelennek meg.
+
+#### Kézzel
+
+Töltsd le a `streamjelly_<verzió>.zip`-et a [Releases](https://github.com/burgatshow/streamjelly/releases) oldalról, vagy fordítsd le magad, majd:
+
 1. Másold a `StreamJelly_<verzió>` mappát a Jellyfin plugins könyvtárába:
    - hivatalos `jellyfin/jellyfin` image: `<config>/plugins/`
    - `linuxserver/jellyfin` image: `<config>/data/plugins/`
@@ -189,9 +223,16 @@ Csak rendszergazdának. JSON-t ad vissza (camelCase) minden lejátszó munkamene
 - **Aktív hang- / feliratsáv** – a szerver csak azt tudja, amit a kliens a `/Sessions/Playing/Progress` hívásban jelent (`AudioStreamIndex`, `SubtitleStreamIndex`). Ha egy kliens ezt nem küldi, a plugin sem tudja megmutatni. A kliens által letöltött vagy a fájlból olvasott felirat a szerver oldalon nem jár külön stream-mel.
 - **ffmpeg folyamatok** – a Jellyfin nem ad publikus API-t az átkódolások listázására, ezért a plugin a `TranscodeManager` belső listáját reflexióval olvassa. Ha egy későbbi verzióban ez megváltozik, a plugin tovább működik, csak az ffmpeg rész tűnik el (a fejléc jelzi).
 - **Beégetés, tone mapping** – az ffmpeg szűrőiből felismerve (heurisztika).
-- **„Egy hiba történt a plugin adatainak lekérdezésekor az adattárból”** – a plugin adatlapján jelenik meg, mert a StreamJelly kézzel van telepítve, és nincs benne egyik plugin-adattárban sem. Ártalmatlan.
+- **„Egy hiba történt a plugin adatainak lekérdezésekor az adattárból”** – a plugin adatlapján jelenik meg, ha a StreamJelly kézzel van telepítve, és az adattára nincs hozzáadva. Ártalmatlan; az adattár hozzáadásával (lásd Telepítés) eltűnik.
 - **Nem frissül a plugin képe** – a Jellyfin minden kérésnél a plugin mappájából olvassa a `thumb.png`-t, újraindítás nem kell; a böngésző viszont gyorsítótárazza, ezért Cmd+Shift+R vagy privát ablak.
 - **A kliens IP-je localhost** – a Jellyfin fordított proxy mögött van. Vezérlőpult → Hálózat → *Ismert proxyk* mezőbe írd be a proxy címét (általában `127.0.0.1, ::1`), a proxy küldje az `X-Forwarded-For` fejlécet, majd indítsd újra a Jellyfint.
+
+### Kiadás
+
+1. Emeld a verziót a `Jellyfin.Plugin.StreamJelly.csproj`-ban (`AssemblyVersion`, `FileVersion`), a `meta.json`-ban és a `build.sh`-ban, és írd be a `CHANGELOG.md`-be.
+2. Futtasd: `sh release.sh`. Lefordítja a plugint (.NET SDK-val, ha telepítve van, különben Dockerben), elkészíti a `dist/streamjelly_<verzió>.zip`-et és a `dist/release-notes.md`-t, és felveszi a verziót (letöltési link, MD5 ellenőrzőösszeg) a `manifest.json`-ba.
+3. GitHubon készíts release-t `v<verzió>` taggel (pl. `v1.6.0`), a kiadási megjegyzéssel és a zip csatolásával.
+4. Commitold és pushold a `manifest.json`-t (a verzióemeléssel együtt). Az adattárat használó Jellyfin szerverek ezután látják a frissítést.
 
 ### Felépítés
 
@@ -204,4 +245,7 @@ Web/streamjelly.html          vezérlőpult oldal (HTML, CSS, JS – beágyazott
 meta.json                         plugin manifest
 assets/                           logó (SVG), ikonok, plugin kártya kép (thumb.png)
 build.sh                          Docker fordítás
+manifest.json                     Jellyfin plugin-adattár (a release.sh frissíti)
+release.sh                        kiadás: zip, kiadási megjegyzés, manifest frissítés
+scripts/release.py                a release.sh segédszkriptje
 ```
