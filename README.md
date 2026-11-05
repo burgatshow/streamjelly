@@ -12,7 +12,7 @@
 
 StreamJelly is a Jellyfin server plugin that shows, for every active playback, **what the server actually sends to the client**: which source streams are used, whether each one is played directly, copied (remuxed), transcoded or burned in, and the parameters of the running ffmpeg process.
 
-The page lives in the Jellyfin dashboard (left menu → *StreamJelly*), is visible to administrators only, and refreshes itself every few seconds. The user interface is in Hungarian.
+The page lives in the Jellyfin dashboard (left menu → *StreamJelly*), is visible to administrators only, and refreshes itself every few seconds. The interface follows the Jellyfin display language: Hungarian for Hungarian, English for everything else.
 
 ### Features
 
@@ -135,7 +135,7 @@ scripts/release.py                helpers used by release.sh
 
 A StreamJelly egy Jellyfin szerver plugin, ami minden aktív lejátszásnál megmutatja, **mit küld ténylegesen a szerver a kliensnek**: mely forrás stream-ek mennek, közvetlenül, másolva (remux), átkódolva vagy beégetve, és milyen paraméterekkel fut az ffmpeg.
 
-Az oldal a Jellyfin Vezérlőpultjában van (bal oldali menü → *StreamJelly*), csak rendszergazda látja, és pár másodpercenként magától frissül.
+Az oldal a Jellyfin Vezérlőpultjában van (bal oldali menü → *StreamJelly*), csak rendszergazda látja, és pár másodpercenként magától frissül. A felület a Jellyfin megjelenítési nyelvét követi: magyar nyelvnél magyarul, minden más nyelvnél angolul jelenik meg.
 
 ### Funkciók
 

@@ -330,7 +330,7 @@ public class StreamJellyController : ControllerBase
             {
                 d.Decision = "Copy";
                 d.To = v?.Codec;
-                d.Note = "Remux – a videó változatlanul, csak új konténerben (" + dto.Output.Container + ")";
+                d.Note = "Remux: video unchanged, new container (" + dto.Output.Container + ")";
             }
             else
             {
@@ -381,18 +381,18 @@ public class StreamJellyController : ControllerBase
             if (hints?.SubtitleBurnIn == true)
             {
                 d.Decision = "BurnIn";
-                d.To = "beégetve a videóba";
-                d.Note = "A felirat miatt a videót újra kell kódolni";
+                d.To = "burned into the video";
+                d.Note = "The subtitle forces a video transcode";
             }
             else if (direct)
             {
                 d.Decision = sub.IsExternal ? "Separate" : "Direct";
-                d.To = sub.IsExternal ? "külön fájlként" : "a konténerben";
+                d.To = sub.IsExternal ? "as a separate file" : "in the container";
             }
             else
             {
                 d.Decision = "Separate";
-                d.To = "külön stream (pl. WebVTT/SRT/ASS)";
+                d.To = "separate stream (e.g. WebVTT/SRT/ASS)";
             }
 
             list.Add(d);
@@ -422,7 +422,7 @@ public class StreamJellyController : ControllerBase
                 s.ChannelLayout ?? (s.Channels.HasValue ? s.Channels + " ch" : null),
                 s.Language,
                 s.BitRate.HasValue ? FormatBitrate(s.BitRate.Value) : null),
-            _ => JoinParts(s.Codec, s.Language, s.IsForced ? "forced" : null, s.IsExternal ? "külső" : null)
+            _ => JoinParts(s.Codec, s.Language, s.IsForced ? "forced" : null, s.IsExternal ? "external" : null)
         };
     }
 

@@ -26,7 +26,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     public override Guid Id => Guid.Parse("7cbb0962-443d-4821-92f1-86085e90ded5");
 
-    public override string Description => "Az aktív lejátszások forrás- és kimeneti stream-jei, átkódolási paraméterei és ffmpeg folyamatai.";
+    public override string Description => "Shows what the server really streams to each client: direct play, remux or transcode, per stream, with live ffmpeg details.";
 
     public IEnumerable<PluginPageInfo> GetPages()
     {

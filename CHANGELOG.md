@@ -8,6 +8,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.6.0] – 2026-11-05
+#### Added
+- English user interface. The dashboard page follows the Jellyfin display language: Hungarian for Hungarian, English for every other language. All labels, states, transcode reasons, messages and number formats (decimal separator, time) are translated.
+
+#### Changed
+- Plugin description (`meta.json`, plugin list) is now in English.
+- API: the descriptive texts of the per-stream decisions (`to`, `note`) are now in English; the API is language independent.
+- `build.sh` comments in English.
+
 ### [1.5.0] – 2026-11-05
 #### Changed
 - Plugin renamed from *Stream Inspector* to **StreamJelly** (display name, namespace, assembly, project file, dashboard page).
@@ -61,6 +70,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.6.0] – 2026-11-05
+#### Új
+- Angol nyelvű felület. Az oldal a Jellyfin megjelenítési nyelvét követi: magyar nyelvnél magyarul, minden más nyelvnél angolul jelenik meg. Minden felirat, állapot, átkódolási ok, üzenet és számformátum (tizedesjel, időpont) le van fordítva.
+
+#### Változott
+- A plugin leírása (`meta.json`, bővítménylista) angol lett.
+- API: a sávonkénti döntések leíró szövegei (`to`, `note`) angolok lettek; az API nyelvfüggetlen.
+- A `build.sh` megjegyzései angolul.
 
 ### [1.5.0] – 2026-11-05
 #### Változott

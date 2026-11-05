@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>StreamJelly</title>
@@ -177,18 +177,18 @@
     <header class="si-bar">
         <div>
             <h1>StreamJelly</h1>
-            <div class="si-sub" id="siStatus">Betöltés…</div>
+            <div class="si-sub" id="siStatus" data-i18n="loading">Loading…</div>
         </div>
         <div class="si-totals" id="siTotals"></div>
-        <button type="button" class="si-gear" id="siGear" aria-expanded="false" aria-controls="siSettings">Beállítások</button>
+        <button type="button" class="si-gear" id="siGear" aria-expanded="false" aria-controls="siSettings" data-i18n="settings">Settings</button>
     </header>
 
     <div class="si-settings" id="siSettings">
-        <label><input type="checkbox" id="siAuto" checked> Automatikus frissítés</label>
-        <label>Gyakoriság <input type="number" id="siInterval" min="1" max="60" value="3"> mp</label>
-        <label><input type="checkbox" id="siShowPaths"> Fájlútvonalak mutatása</label>
-        <label><input type="checkbox" id="siShowCmd"> ffmpeg parancs mutatása</label>
-        <button type="button" class="si-save" id="siSave">Mentés</button>
+        <label><input type="checkbox" id="siAuto" checked> <span data-i18n="auto_refresh">Auto refresh</span></label>
+        <label><span data-i18n="interval">Every</span> <input type="number" id="siInterval" min="1" max="60" value="3"> <span data-i18n="sec">s</span></label>
+        <label><input type="checkbox" id="siShowPaths"> <span data-i18n="show_paths">Show file paths</span></label>
+        <label><input type="checkbox" id="siShowCmd"> <span data-i18n="show_cmd">Show ffmpeg command</span></label>
+        <button type="button" class="si-save" id="siSave" data-i18n="save">Save</button>
     </div>
 
     <div id="siError"></div>
@@ -208,12 +208,122 @@
     var justOpened = null;
     var lastList = [];
 
+    /* ---------- language: follows the Jellyfin UI language (Hungarian, otherwise English) ---------- */
+    var LANG = (function () {
+        var l = (document.documentElement.getAttribute('lang') || navigator.language || 'en').toLowerCase();
+        return l.indexOf('hu') === 0 ? 'hu' : 'en';
+    })();
+    var DEC = LANG === 'hu' ? ',' : '.';
+    var I18N = {
+        en: {
+            loading: 'Loading…', settings: 'Settings', auto_refresh: 'Auto refresh', interval: 'Every', sec: 's', min: 'min',
+            show_paths: 'Show file paths', show_cmd: 'Show ffmpeg command', save: 'Save', saved: 'Saved',
+            open_details: 'Open details', collapse: 'Collapse', episode: 'season {s}, episode {e}',
+            empty_title: 'Nobody is watching anything right now', empty_text: 'As soon as playback starts, you will see here what the client receives.',
+            paused: 'Paused', track: 'Playback', track_buf: ' / transcoded',
+            source: 'Source', server: 'Server', client_gets: 'Client receives',
+            unchanged: 'unchanged', unchanged_in: 'unchanged, in {c} container', with_subs: 'with subtitles',
+            burned: 'burned into the picture', burned_note: 'so the video has to be re-encoded too',
+            separate: 'separate stream', separate_note: 'drawn by the client',
+            forced: 'forced', external_file: 'external file', external: 'external', default_: 'default',
+            not_supported: 'Not supported by the client:',
+            st_now: 'Now to the client', st_container: 'Container', st_target: 'Target bitrate', st_filebr: 'File bitrate',
+            st_speed: 'Encoding speed', st_ahead: 'Transcoded ahead', st_downloaded: 'Downloaded by the client',
+            st_hw: 'Hardware acceleration', hw_none: 'none (CPU)',
+            details: 'Details: all streams, file and ffmpeg', h_source: 'Source file', h_output: 'Output',
+            size: 'Size', bitrate: 'Bitrate', type: 'Type', protocol: 'Protocol', playable: 'Playable',
+            pl_direct: 'directly', pl_remux: 'with remux', pl_transcode: 'transcoded', path: 'Path',
+            video: 'Video', resolution: 'Resolution', framerate: 'Frame rate', audio: 'Audio', channels: 'Channels',
+            process: 'Process', venc: 'Video encoder', vbr: 'Video bitrate', aenc: 'Audio encoder', ch_n: '{n} channels',
+            segments: 'Segments', transcoded_data: 'Transcoded data', throttling: 'Throttling', enabled: 'enabled', outfile: 'Output file',
+            th_type: 'Type', th_format: 'Format', th_lang: 'Language', th_title: 'Title', th_feat: 'Properties',
+            copy: 'Copy', copied: 'Copied',
+            no_report: 'The client has not sent a playback report yet, so the active audio and subtitle tracks are unknown.',
+            report: 'Last report from the client {ago} ago: audio track {a}, subtitles {s}.',
+            not_set: 'not set', off: 'off', report_stale: ' If you switched tracks since then, it shows after the next report.',
+            tot_play: 'playing', tot_tr: 'transcoding', tot_bw: 'outgoing, transcoded',
+            status: 'Jellyfin {v}, updated {t}', no_jobs: '. ffmpeg data cannot be read in this Jellyfin version.',
+            error: 'Could not load the data ({e}). Check that you are signed in as an administrator and that the plugin is active.',
+            mono: 'mono', stereo: 'stereo',
+            mode: { DirectPlay: 'Direct play', DirectStream: 'Remux', Transcode: 'Transcode', Unknown: 'Unknown' },
+            modeNote: { DirectPlay: 'The client gets the original file', DirectStream: 'New container, streams unchanged', Transcode: 'The server re-encodes' },
+            node: { Direct: 'original', Copy: 'copy', Transcode: 'transcode', BurnIn: 'burn-in', Separate: 'separate', None: '–' },
+            kind: { Video: 'Video', Audio: 'Audio', Subtitle: 'Subtitle' },
+            reason: {
+                ContainerNotSupported: 'container', VideoCodecNotSupported: 'video codec', AudioCodecNotSupported: 'audio codec',
+                SubtitleCodecNotSupported: 'subtitle format', AudioIsExternal: 'external audio track', SecondaryAudioNotSupported: 'secondary audio track',
+                VideoProfileNotSupported: 'video profile', VideoLevelNotSupported: 'video level', VideoResolutionNotSupported: 'resolution',
+                VideoBitDepthNotSupported: 'bit depth', VideoFramerateNotSupported: 'frame rate', RefFramesNotSupported: 'reference frames',
+                AnamorphicVideoNotSupported: 'anamorphic video', InterlacedVideoNotSupported: 'interlaced video', AudioChannelsNotSupported: 'channel count',
+                AudioProfileNotSupported: 'audio profile', AudioSampleRateNotSupported: 'sample rate', AudioBitDepthNotSupported: 'audio bit depth',
+                ContainerBitrateExceedsLimit: 'bitrate limit', VideoBitrateNotSupported: 'video bitrate', AudioBitrateNotSupported: 'audio bitrate',
+                UnknownVideoStreamInfo: 'unknown video', UnknownAudioStreamInfo: 'unknown audio', DirectPlayError: 'playback error',
+                VideoRangeTypeNotSupported: 'HDR / Dolby Vision', VideoCodecTagNotSupported: 'codec tag', StreamCountExceedsLimit: 'too many streams'
+            }
+        },
+        hu: {
+            loading: 'Betöltés…', settings: 'Beállítások', auto_refresh: 'Automatikus frissítés', interval: 'Gyakoriság', sec: 'mp', min: 'perc',
+            show_paths: 'Fájlútvonalak mutatása', show_cmd: 'ffmpeg parancs mutatása', save: 'Mentés', saved: 'Mentve',
+            open_details: 'Részletek megnyitása', collapse: 'Összecsukás', episode: '{s}. évad {e}. rész',
+            empty_title: 'Most senki nem néz semmit', empty_text: 'Amint elindul egy lejátszás, itt látod, mit kap a kliens.',
+            paused: 'Szünetel', track: 'Lejátszás', track_buf: ' / átkódolva',
+            source: 'Forrás', server: 'Szerver', client_gets: 'Kliens kapja',
+            unchanged: 'változatlanul', unchanged_in: 'változatlanul, {c} konténerben', with_subs: 'felirattal',
+            burned: 'a képbe égetve', burned_note: 'emiatt a videót is újra kell kódolni',
+            separate: 'külön stream', separate_note: 'a kliens rajzolja ki',
+            forced: 'kényszerített', external_file: 'külső fájl', external: 'külső', default_: 'alapértelmezett',
+            not_supported: 'A kliens nem támogatja:',
+            st_now: 'Most a kliens felé', st_container: 'Konténer', st_target: 'Cél bitráta', st_filebr: 'Fájl bitrátája',
+            st_speed: 'Kódolási sebesség', st_ahead: 'Előre átkódolva', st_downloaded: 'Kliens letöltött',
+            st_hw: 'Hardveres gyorsítás', hw_none: 'nincs (CPU)',
+            details: 'Részletek: összes stream, fájl és ffmpeg', h_source: 'Forrásfájl', h_output: 'Kimenet',
+            size: 'Méret', bitrate: 'Bitráta', type: 'Típus', protocol: 'Protokoll', playable: 'Lejátszható',
+            pl_direct: 'közvetlenül', pl_remux: 'remuxszal', pl_transcode: 'átkódolva', path: 'Útvonal',
+            video: 'Videó', resolution: 'Felbontás', framerate: 'Képkocka', audio: 'Hang', channels: 'Csatornák',
+            process: 'Folyamat', venc: 'Videó encoder', vbr: 'Videó bitráta', aenc: 'Hang encoder', ch_n: '{n} csatorna',
+            segments: 'Szegmensek', transcoded_data: 'Átkódolt adat', throttling: 'Throttling', enabled: 'bekapcsolva', outfile: 'Kimeneti fájl',
+            th_type: 'Típus', th_format: 'Formátum', th_lang: 'Nyelv', th_title: 'Cím', th_feat: 'Jellemzők',
+            copy: 'Másolás', copied: 'Kimásolva',
+            no_report: 'A kliens még nem küldött lejátszási jelentést, ezért nem tudni, melyik hang- és feliratsáv aktív.',
+            report: 'A kliens utolsó jelentése {ago} ezelőtt: hangsáv {a}, felirat {s}.',
+            not_set: 'nincs megadva', off: 'kikapcsolva', report_stale: ' Ha azóta váltottál sávot, a következő jelentésig ez nem látszik.',
+            tot_play: 'lejátszás', tot_tr: 'átkódolás', tot_bw: 'kimenő, átkódolt',
+            status: 'Jellyfin {v}, frissítve {t}', no_jobs: '. Az ffmpeg adatok ebben a Jellyfin verzióban nem olvashatók.',
+            error: 'Nem sikerült lekérni az adatokat ({e}). Ellenőrizd, hogy rendszergazdaként vagy-e bejelentkezve, és hogy a plugin aktív-e.',
+            mono: 'mono', stereo: 'sztereó',
+            mode: { DirectPlay: 'Közvetlen lejátszás', DirectStream: 'Remux', Transcode: 'Átkódolás', Unknown: 'Ismeretlen' },
+            modeNote: { DirectPlay: 'A kliens az eredeti fájlt kapja', DirectStream: 'Új konténer, a stream-ek változatlanok', Transcode: 'A szerver újrakódol' },
+            node: { Direct: 'eredeti', Copy: 'másolás', Transcode: 'átkódolás', BurnIn: 'beégetés', Separate: 'külön', None: '–' },
+            kind: { Video: 'Videó', Audio: 'Hang', Subtitle: 'Felirat' },
+            reason: {
+                ContainerNotSupported: 'konténer', VideoCodecNotSupported: 'videó kodek', AudioCodecNotSupported: 'hang kodek',
+                SubtitleCodecNotSupported: 'felirat formátum', AudioIsExternal: 'külső hangsáv', SecondaryAudioNotSupported: 'másodlagos hangsáv',
+                VideoProfileNotSupported: 'videó profil', VideoLevelNotSupported: 'videó level', VideoResolutionNotSupported: 'felbontás',
+                VideoBitDepthNotSupported: 'bitmélység', VideoFramerateNotSupported: 'képkockasebesség', RefFramesNotSupported: 'referencia frame-ek',
+                AnamorphicVideoNotSupported: 'anamorf kép', InterlacedVideoNotSupported: 'váltottsoros kép', AudioChannelsNotSupported: 'csatornaszám',
+                AudioProfileNotSupported: 'hang profil', AudioSampleRateNotSupported: 'mintavétel', AudioBitDepthNotSupported: 'hang bitmélység',
+                ContainerBitrateExceedsLimit: 'bitráta-limit', VideoBitrateNotSupported: 'videó bitráta', AudioBitrateNotSupported: 'hang bitráta',
+                UnknownVideoStreamInfo: 'ismeretlen videó', UnknownAudioStreamInfo: 'ismeretlen hang', DirectPlayError: 'lejátszási hiba',
+                VideoRangeTypeNotSupported: 'HDR / Dolby Vision', VideoCodecTagNotSupported: 'kodek tag', StreamCountExceedsLimit: 'túl sok stream'
+            }
+        }
+    };
+    /** Translated text; `{name}` placeholders are filled from `args`. Falls back to English. */
+    function t(key, args) {
+        var v = I18N[LANG][key] !== undefined ? I18N[LANG][key] : I18N.en[key];
+        if (typeof v === 'string' && args) {
+            Object.keys(args).forEach(function (k) { v = v.replace('{' + k + '}', args[k]); });
+        }
+        return v;
+    }
+    function episode(s) { return t('episode', { s: s.seasonNumber, e: s.episodeNumber }); }
+
     function card(s) {
         var pct = s.runTimeTicks ? Math.min(100, 100 * (s.positionTicks || 0) / s.runTimeTicks) : 0;
-        var sub = s.seriesName ? s.seriesName + ', ' + s.seasonNumber + '. évad ' + s.episodeNumber + '. rész' : (s.productionYear || '');
+        var sub = s.seriesName ? s.seriesName + ', ' + episode(s) : (s.productionYear || '');
         var mode = (s.output || {}).mode || 'Unknown';
         var cover = s.posterItemId ? ApiClient.getUrl('Items/' + s.posterItemId + '/Images/Primary', { maxHeight: 220, quality: 85 }) : '';
-        return '<div class="si-card' + (s.isPaused ? ' is-paused' : '') + '" role="button" tabindex="0" aria-expanded="false" data-toggle="' + esc(s.sessionId) + '" title="Részletek megnyitása">'
+        return '<div class="si-card' + (s.isPaused ? ' is-paused' : '') + '" role="button" tabindex="0" aria-expanded="false" data-toggle="' + esc(s.sessionId) + '" title="' + esc(t('open_details')) + '">'
             + '<div class="si-card-cover"' + (cover ? ' style="background-image:url(\'' + cover + '\')"' : '') + '></div>'
             + '<div class="si-card-main">'
             + '<div class="si-card-top"><div>'
@@ -228,7 +338,7 @@
     function render() {
         page.querySelector('#siSessions').innerHTML = lastList.length
             ? lastList.map(function (s) { return expanded[s.sessionId] ? session(s) : card(s); }).join('')
-            : '<div class="si-empty" style="grid-column:1/-1"><b>Most senki nem néz semmit</b>Amint elindul egy lejátszás, itt látod, mit kap a kliens.</div>';
+            : '<div class="si-empty" style="grid-column:1/-1"><b>' + esc(t('empty_title')) + '</b>' + esc(t('empty_text')) + '</div>';
         justOpened = null;
     }
     function toggle(id) {
@@ -249,20 +359,20 @@
     }
     function mbps(bps) {
         if (!bps) return '';
-        return bps >= 1e6 ? (bps / 1e6).toFixed(bps >= 1e7 ? 0 : 1).replace('.', ',') + ' Mbps' : Math.round(bps / 1e3) + ' kbps';
+        return bps >= 1e6 ? (bps / 1e6).toFixed(bps >= 1e7 ? 0 : 1).replace('.', DEC) + ' Mbps' : Math.round(bps / 1e3) + ' kbps';
     }
     function bytes(b) {
         if (b === null || b === undefined) return '';
         var u = ['B', 'KB', 'MB', 'GB', 'TB'], i = 0;
         while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
-        return b.toFixed(i > 1 ? 1 : 0).replace('.', ',') + ' ' + u[i];
+        return b.toFixed(i > 1 ? 1 : 0).replace('.', DEC) + ' ' + u[i];
     }
-    function clock(t) {
-        if (t === null || t === undefined) return '–';
-        var s = Math.floor(t / 1e7), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    function clock(ticks) {
+        if (ticks === null || ticks === undefined) return '–';
+        var s = Math.floor(ticks / 1e7), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
         return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0');
     }
-    function fps(f) { return f ? (+f).toFixed(3).replace(/\.?0+$/, '').replace('.', ',') + ' fps' : ''; }
+    function fps(f) { return f ? (+f).toFixed(3).replace(/\.?0+$/, '').replace('.', DEC) + ' fps' : ''; }
     var codecNames = {
         hevc: 'HEVC', h265: 'HEVC', h264: 'H.264', avc: 'H.264', av1: 'AV1', vp9: 'VP9', vp8: 'VP8', mpeg2video: 'MPEG-2', mpeg4: 'MPEG-4', vc1: 'VC-1',
         aac: 'AAC', ac3: 'Dolby Digital', eac3: 'Dolby Digital+', truehd: 'Dolby TrueHD', dts: 'DTS', 'dts-hd': 'DTS-HD', dca: 'DTS', mp3: 'MP3', opus: 'Opus', flac: 'FLAC', vorbis: 'Vorbis', alac: 'ALAC', pcm_s16le: 'PCM', pcm_s24le: 'PCM',
@@ -280,30 +390,16 @@
     function channels(n, layout) {
         if (layout) return layout.replace('(side)', '');
         if (!n) return '';
-        return { 1: 'mono', 2: 'sztereó', 6: '5.1', 8: '7.1' }[n] || n + ' csatorna';
+        return { 1: t('mono'), 2: t('stereo'), 6: '5.1', 8: '7.1' }[n] || t('ch_n', { n: n });
     }
     function range(rt) { return rt && rt !== 'Unknown' && rt !== 'SDR' ? rt.replace('DOVI', 'Dolby Vision') : ''; }
     function join(arr, sep) { return arr.filter(function (x) { return x !== null && x !== undefined && x !== ''; }).join(sep || '  ·  '); }
 
-    var modeName = { DirectPlay: 'Közvetlen lejátszás', DirectStream: 'Remux', Transcode: 'Átkódolás', Unknown: 'Ismeretlen' };
-    var modeNote = {
-        DirectPlay: 'A kliens az eredeti fájlt kapja',
-        DirectStream: 'Új konténer, a stream-ek változatlanok',
-        Transcode: 'A szerver újrakódol'
-    };
-    var nodeName = { Direct: 'eredeti', Copy: 'másolás', Transcode: 'átkódolás', BurnIn: 'beégetés', Separate: 'külön', None: '–' };
-    var kindName = { Video: 'Videó', Audio: 'Hang', Subtitle: 'Felirat' };
-    var reasonName = {
-        ContainerNotSupported: 'konténer', VideoCodecNotSupported: 'videó kodek', AudioCodecNotSupported: 'hang kodek',
-        SubtitleCodecNotSupported: 'felirat formátum', AudioIsExternal: 'külső hangsáv', SecondaryAudioNotSupported: 'másodlagos hangsáv',
-        VideoProfileNotSupported: 'videó profil', VideoLevelNotSupported: 'videó level', VideoResolutionNotSupported: 'felbontás',
-        VideoBitDepthNotSupported: 'bitmélység', VideoFramerateNotSupported: 'képkockasebesség', RefFramesNotSupported: 'referencia frame-ek',
-        AnamorphicVideoNotSupported: 'anamorf kép', InterlacedVideoNotSupported: 'váltottsoros kép', AudioChannelsNotSupported: 'csatornaszám',
-        AudioProfileNotSupported: 'hang profil', AudioSampleRateNotSupported: 'mintavétel', AudioBitDepthNotSupported: 'hang bitmélység',
-        ContainerBitrateExceedsLimit: 'bitráta-limit', VideoBitrateNotSupported: 'videó bitráta', AudioBitrateNotSupported: 'hang bitráta',
-        UnknownVideoStreamInfo: 'ismeretlen videó', UnknownAudioStreamInfo: 'ismeretlen hang', DirectPlayError: 'lejátszási hiba',
-        VideoRangeTypeNotSupported: 'HDR / Dolby Vision', VideoCodecTagNotSupported: 'kodek tag', StreamCountExceedsLimit: 'túl sok stream'
-    };
+    var modeName = t('mode');
+    var modeNote = t('modeNote');
+    var nodeName = t('node');
+    var kindName = t('kind');
+    var reasonName = t('reason');
 
     /* ---------- lanes ---------- */
     function active(src, type) {
@@ -313,22 +409,22 @@
         if (!st) return { v: '–', s: '' };
         if (type === 'Video') return { v: join([res(st.width, st.height), codec(st.codec), range(st.videoRangeType)], ' '), s: join([st.profile, st.bitDepth ? st.bitDepth + ' bit' : '', fps(st.frameRate), mbps(st.bitRate)]) };
         if (type === 'Audio') return { v: join([codec(st.codec), channels(st.channels, st.channelLayout)], ' '), s: join([st.language, st.profile && st.profile !== st.codec ? st.profile : '', mbps(st.bitRate)]) };
-        return { v: codec(st.codec), s: join([st.title || st.language, st.isForced ? 'kényszerített' : '', st.isExternal ? 'külső fájl' : '']) };
+        return { v: codec(st.codec), s: join([st.title || st.language, st.isForced ? t('forced') : '', st.isExternal ? t('external_file') : '']) };
     }
     function outEnd(type, d, s, st, hints) {
         var o = s.output || {};
         if (d.decision === 'Direct' || d.decision === 'Copy') {
             var e = sourceEnd(type, st);
-            return { v: e.v, s: d.decision === 'Copy' ? 'változatlanul, ' + (o.container || '') + ' konténerben' : 'változatlanul' };
+            return { v: e.v, s: d.decision === 'Copy' ? t('unchanged_in', { c: o.container || '' }) : t('unchanged') };
         }
-        if (type === 'Video') return { v: join([res(o.width, o.height), codec(o.videoCodec)], ' '), s: join([hints && hints.videoEncoder, fps(o.framerate), hints && hints.toneMapping ? 'HDR → SDR' : '', d.decision === 'BurnIn' ? 'felirattal' : ''], '  ·  ') };
+        if (type === 'Video') return { v: join([res(o.width, o.height), codec(o.videoCodec)], ' '), s: join([hints && hints.videoEncoder, fps(o.framerate), hints && hints.toneMapping ? 'HDR → SDR' : '', d.decision === 'BurnIn' ? t('with_subs') : ''], '  ·  ') };
         if (type === 'Audio') return { v: join([codec(o.audioCodec), channels(o.audioChannels)], ' '), s: join([hints && hints.audioEncoder, hints && hints.audioBitrate ? mbps(+hints.audioBitrate) : '']) };
-        if (d.decision === 'BurnIn') return { v: 'a képbe égetve', s: 'emiatt a videót is újra kell kódolni' };
-        return { v: 'külön stream', s: 'a kliens rajzolja ki' };
+        if (d.decision === 'BurnIn') return { v: t('burned'), s: t('burned_note') };
+        return { v: t('separate'), s: t('separate_note') };
     }
     function lanes(s) {
         var hints = s.jobs && s.jobs[0] ? s.jobs[0].hints : null;
-        var h = '<div class="si-path"><div class="si-path-head"><div>Forrás</div><div>Szerver</div><div>Kliens kapja</div></div>';
+        var h = '<div class="si-path"><div class="si-path-head"><div>' + esc(t('source')) + '</div><div>' + esc(t('server')) + '</div><div>' + esc(t('client_gets')) + '</div></div>';
         (s.decisions || []).forEach(function (d) {
             var st = active(s.source, d.type);
             var a = sourceEnd(d.type, st), b = outEnd(d.type, d, s, st, hints);
@@ -352,7 +448,7 @@
         var buf = job && job.transcodingPositionTicks && s.runTimeTicks ? Math.min(100, 100 * job.transcodingPositionTicks / s.runTimeTicks) : 0;
         var vSrc = active(s.source, 'Video');
         var title = s.itemName || '';
-        var sub = s.seriesName ? s.seriesName + '  ·  ' + s.seasonNumber + '. évad ' + s.episodeNumber + '. rész' : (s.productionYear || '');
+        var sub = s.seriesName ? s.seriesName + '  ·  ' + episode(s) : (s.productionYear || '');
 
         var h = '<article class="si-session' + (s.isPaused ? '' : ' is-live') + (justOpened === s.sessionId ? ' just-opened' : '') + '">';
         h += '<div class="si-hero">';
@@ -367,79 +463,79 @@
             + (s.deviceName ? '<span class="si-chip">' + esc(s.deviceName) + '</span>' : '')
             + (s.remoteEndPoint ? '<span class="si-chip">' + esc(s.remoteEndPoint) + '</span>' : '')
             + '</div></div>';
-        h += '<div class="si-mode"><button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">Összecsukás</button><br><div class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</div>'
+        h += '<div class="si-mode"><button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">' + esc(t('collapse')) + '</button><br><div class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</div>'
             + '<div class="si-mode-note">' + esc(modeNote[mode] || '') + '</div></div>';
         h += '</div>';
 
-        h += '<div class="si-time">' + (s.isPaused ? '<span class="si-paused">Szünetel</span>' : '')
+        h += '<div class="si-time">' + (s.isPaused ? '<span class="si-paused">' + esc(t('paused')) + '</span>' : '')
             + '<span>' + clock(s.positionTicks) + '</span>'
-            + '<div class="si-track" title="Lejátszás' + (buf ? ' / átkódolva' : '') + '"><i style="width:' + buf.toFixed(1) + '%"></i><b style="width:' + pct.toFixed(1) + '%"></b></div>'
+            + '<div class="si-track" title="' + esc(t('track') + (buf ? t('track_buf') : '')) + '"><i style="width:' + buf.toFixed(1) + '%"></i><b style="width:' + pct.toFixed(1) + '%"></b></div>'
             + '<span>' + clock(s.runTimeTicks) + '</span></div>';
 
         h += lanes(s);
         h += report(s);
 
         if (o.transcodeReasons && o.transcodeReasons.length) {
-            h += '<div class="si-reasons"><span>A kliens nem támogatja:</span>'
+            h += '<div class="si-reasons"><span>' + esc(t('not_supported')) + '</span>'
                 + o.transcodeReasons.map(function (r) { return '<span class="si-reason">' + esc(reasonName[r] || r) + '</span>'; }).join('') + '</div>';
         }
 
         // live numbers
         var stats = [];
         var rate = job ? rates[job.id || s.sessionId] : null;
-        if (rate) stats.push(['Most a kliens felé', mbps(rate)]);
+        if (rate) stats.push([t('st_now'), mbps(rate)]);
         var cont = o.container || (s.source && s.source.container);
-        if (cont) stats.push(['Konténer', String(cont).split(',')[0].toUpperCase()]);
-        stats.push([job ? 'Cél bitráta' : 'Fájl bitrátája', mbps(o.bitrate || (s.source && s.source.bitrate)) || '–']);
+        if (cont) stats.push([t('st_container'), String(cont).split(',')[0].toUpperCase()]);
+        stats.push([job ? t('st_target') : t('st_filebr'), mbps(o.bitrate || (s.source && s.source.bitrate)) || '–']);
         if (job) {
             if (job.framerate) {
                 var speed = vSrc && vSrc.frameRate ? job.framerate / vSrc.frameRate : null;
-                stats.push(['Kódolási sebesség', speed ? speed.toFixed(1).replace('.', ',') + '×' : fps(job.framerate), speed && speed < 1.05 && !s.isPaused ? 'warn' : '']);
+                stats.push([t('st_speed'), speed ? speed.toFixed(1).replace('.', DEC) + '×' : fps(job.framerate), speed && speed < 1.05 && !s.isPaused ? 'warn' : '']);
             }
             if (job.transcodingPositionTicks && s.positionTicks !== undefined) {
                 var ahead = (job.transcodingPositionTicks - (s.positionTicks || 0)) / 1e7;
-                stats.push(['Előre átkódolva', ahead >= 90 ? Math.round(ahead / 60) + ' perc' : Math.max(0, Math.round(ahead)) + ' mp', ahead < 10 && !s.isPaused ? 'warn' : '']);
+                stats.push([t('st_ahead'), ahead >= 90 ? Math.round(ahead / 60) + ' ' + t('min') : Math.max(0, Math.round(ahead)) + ' ' + t('sec'), ahead < 10 && !s.isPaused ? 'warn' : '']);
             }
-            stats.push(['Kliens letöltött', bytes(job.bytesDownloaded)]);
+            stats.push([t('st_downloaded'), bytes(job.bytesDownloaded)]);
         }
-        if (o.hardwareAcceleration && o.hardwareAcceleration.toLowerCase() !== 'none') stats.push(['Hardveres gyorsítás', o.hardwareAcceleration.toUpperCase(), 'hw']);
-        else if (job && mode === 'Transcode') stats.push(['Hardveres gyorsítás', 'nincs (CPU)']);
+        if (o.hardwareAcceleration && o.hardwareAcceleration.toLowerCase() !== 'none') stats.push([t('st_hw'), o.hardwareAcceleration.toUpperCase(), 'hw']);
+        else if (job && mode === 'Transcode') stats.push([t('st_hw'), t('hw_none')]);
         h += '<div class="si-stats">' + stats.map(function (x) {
             return '<div class="si-stat' + (x[2] ? ' ' + x[2] : '') + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[0]) + '</span></div>';
         }).join('') + '</div>';
 
         // details
         var did = 'more-' + s.sessionId;
-        h += '<details class="si-more" data-did="' + esc(did) + '"' + (openState[did] ? ' open' : '') + '><summary>Részletek: összes stream, fájl és ffmpeg</summary><div class="si-more-body">';
+        h += '<details class="si-more" data-did="' + esc(did) + '"' + (openState[did] ? ' open' : '') + '><summary>' + esc(t('details')) + '</summary><div class="si-more-body">';
         h += '<div class="si-cols">';
         var src = s.source;
         if (src) {
-            h += '<div><h3>Forrásfájl</h3><dl>'
-                + dl('Konténer', src.container) + dl('Méret', bytes(src.size)) + dl('Bitráta', mbps(src.bitrate))
-                + dl('Típus', src.videoType) + dl('Protokoll', src.protocol)
-                + dl('Lejátszható', join([src.supportsDirectPlay ? 'közvetlenül' : '', src.supportsDirectStream ? 'remuxszal' : '', src.supportsTranscoding ? 'átkódolva' : ''], ', '))
-                + dl('Útvonal', src.path) + '</dl></div>';
+            h += '<div><h3>' + esc(t('h_source')) + '</h3><dl>'
+                + dl(t('st_container'), src.container) + dl(t('size'), bytes(src.size)) + dl(t('bitrate'), mbps(src.bitrate))
+                + dl(t('type'), src.videoType) + dl(t('protocol'), src.protocol)
+                + dl(t('playable'), join([src.supportsDirectPlay ? t('pl_direct') : '', src.supportsDirectStream ? t('pl_remux') : '', src.supportsTranscoding ? t('pl_transcode') : ''], ', '))
+                + dl(t('path'), src.path) + '</dl></div>';
         }
-        h += '<div><h3>Kimenet</h3><dl>'
-            + dl('Konténer', o.container) + dl('Videó', codec(o.videoCodec)) + dl('Felbontás', o.width && o.height ? o.width + ' × ' + o.height : '')
-            + dl('Képkocka', fps(o.framerate)) + dl('Hang', codec(o.audioCodec)) + dl('Csatornák', channels(o.audioChannels))
-            + dl('Bitráta', mbps(o.bitrate)) + '</dl></div>';
+        h += '<div><h3>' + esc(t('h_output')) + '</h3><dl>'
+            + dl(t('st_container'), o.container) + dl(t('video'), codec(o.videoCodec)) + dl(t('resolution'), o.width && o.height ? o.width + ' × ' + o.height : '')
+            + dl(t('framerate'), fps(o.framerate)) + dl(t('audio'), codec(o.audioCodec)) + dl(t('channels'), channels(o.audioChannels))
+            + dl(t('bitrate'), mbps(o.bitrate)) + '</dl></div>';
         if (job) {
             var hi = job.hints || {};
             h += '<div><h3>ffmpeg</h3><dl>'
-                + dl('Folyamat', join([job.type === 'Hls' ? 'HLS' : job.type, job.processId ? 'PID ' + job.processId : ''], ', '))
-                + dl('Videó encoder', join([hi.videoEncoder, hi.preset ? 'preset ' + hi.preset : '', hi.crf ? 'CRF ' + hi.crf : ''], ', '))
-                + dl('Videó bitráta', join([hi.videoBitrate ? mbps(+hi.videoBitrate) : '', hi.maxRate ? 'max ' + mbps(+hi.maxRate) : ''], ', '))
-                + dl('Hang encoder', join([hi.audioEncoder, hi.audioBitrate ? mbps(+hi.audioBitrate) : '', hi.audioChannels ? hi.audioChannels + ' csatorna' : ''], ', '))
-                + dl('Szegmensek', join([hi.segmentFormat, hi.segmentLength ? hi.segmentLength + ' mp' : ''], ', '))
-                + dl('Átkódolt adat', bytes(job.bytesTranscoded))
-                + dl('Throttling', job.throttlingEnabled ? 'bekapcsolva' : '')
-                + dl('Kimeneti fájl', job.outputPath) + '</dl></div>';
+                + dl(t('process'), join([job.type === 'Hls' ? 'HLS' : job.type, job.processId ? 'PID ' + job.processId : ''], ', '))
+                + dl(t('venc'), join([hi.videoEncoder, hi.preset ? 'preset ' + hi.preset : '', hi.crf ? 'CRF ' + hi.crf : ''], ', '))
+                + dl(t('vbr'), join([hi.videoBitrate ? mbps(+hi.videoBitrate) : '', hi.maxRate ? 'max ' + mbps(+hi.maxRate) : ''], ', '))
+                + dl(t('aenc'), join([hi.audioEncoder, hi.audioBitrate ? mbps(+hi.audioBitrate) : '', hi.audioChannels ? t('ch_n', { n: hi.audioChannels }) : ''], ', '))
+                + dl(t('segments'), join([hi.segmentFormat, hi.segmentLength ? hi.segmentLength + ' ' + t('sec') : ''], ', '))
+                + dl(t('transcoded_data'), bytes(job.bytesTranscoded))
+                + dl(t('throttling'), job.throttlingEnabled ? t('enabled') : '')
+                + dl(t('outfile'), job.outputPath) + '</dl></div>';
         }
         h += '</div>';
 
         if (src && src.streams && src.streams.length) {
-            h += '<div><div class="si-table-wrap"><table><thead><tr><th>#</th><th>Típus</th><th>Formátum</th><th>Nyelv</th><th>Cím</th><th>Jellemzők</th></tr></thead><tbody>';
+            h += '<div><div class="si-table-wrap"><table><thead><tr><th>#</th><th>' + esc(t('th_type')) + '</th><th>' + esc(t('th_format')) + '</th><th>' + esc(t('th_lang')) + '</th><th>' + esc(t('th_title')) + '</th><th>' + esc(t('th_feat')) + '</th></tr></thead><tbody>';
             src.streams.forEach(function (st) {
                 h += '<tr class="' + (st.isActive ? 'on' : 'off') + '"><td>' + st.index + '</td><td>' + esc(kindName[st.type] || st.type) + '</td>'
                     + '<td>' + esc(join([codec(st.codec), st.profile], ' ')) + '</td><td>' + esc(st.language) + '</td><td>' + esc(st.title || '') + '</td>'
@@ -449,28 +545,30 @@
         }
 
         if (job && job.ffmpegCommand) {
-            h += '<div class="si-cmd"><button type="button" class="si-copy" data-cmd="' + esc(job.ffmpegCommand) + '">Másolás</button><pre>'
+            h += '<div class="si-cmd"><button type="button" class="si-copy" data-cmd="' + esc(job.ffmpegCommand) + '">' + esc(t('copy')) + '</button><pre>'
                 + esc(job.ffmpegCommand).replace(/(^|\s)(-[a-z_:0-9]+)/gi, '$1<span class="opt">$2</span>') + '</pre></div>';
         }
         h += '</div></details></article>';
         return h;
     }
     function report(s) {
-        if (!s.hasProgressReport) return '<div class="si-report stale">A kliens még nem küldött lejátszási jelentést, ezért nem tudni, melyik hang- és feliratsáv aktív.</div>';
+        if (!s.hasProgressReport) return '<div class="si-report stale">' + esc(t('no_report')) + '</div>';
         var ago = Math.max(0, Math.round((Date.now() - new Date(s.lastReportUtc).getTime()) / 1000));
         var subOff = s.selectedSubtitleIndex === null || s.selectedSubtitleIndex === undefined || s.selectedSubtitleIndex < 0;
-        var txt = 'A kliens utolsó jelentése ' + (ago < 60 ? ago + ' mp' : Math.round(ago / 60) + ' perc') + ' ezelőtt: hangsáv '
-            + (s.selectedAudioIndex !== null && s.selectedAudioIndex !== undefined ? '#' + s.selectedAudioIndex : 'nincs megadva')
-            + ', felirat ' + (subOff ? 'kikapcsolva' : '#' + s.selectedSubtitleIndex) + '.';
-        if (ago > 30 && !s.isPaused) txt += ' Ha azóta váltottál sávot, a következő jelentésig ez nem látszik.';
+        var txt = t('report', {
+            ago: ago < 60 ? ago + ' ' + t('sec') : Math.round(ago / 60) + ' ' + t('min'),
+            a: s.selectedAudioIndex !== null && s.selectedAudioIndex !== undefined ? '#' + s.selectedAudioIndex : t('not_set'),
+            s: subOff ? t('off') : '#' + s.selectedSubtitleIndex
+        });
+        if (ago > 30 && !s.isPaused) txt += t('report_stale');
         return '<div class="si-report' + (ago > 30 && !s.isPaused ? ' stale' : '') + '">' + esc(txt) + '</div>';
     }
     function dl(k, v) { return v ? '<dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd>' : ''; }
     function features(st) {
         var p = [];
         if (st.type === 'Video') p = [st.width && st.height ? st.width + '×' + st.height + (st.isInterlaced ? 'i' : 'p') : '', fps(st.frameRate), st.bitDepth ? st.bitDepth + ' bit' : '', range(st.videoRangeType), st.dvProfile ? 'DV ' + st.dvProfile : '', st.pixelFormat, mbps(st.bitRate)];
-        else if (st.type === 'Audio') p = [channels(st.channels, st.channelLayout), st.sampleRate ? (st.sampleRate / 1000).toString().replace('.', ',') + ' kHz' : '', mbps(st.bitRate)];
-        p = p.concat([st.isDefault ? 'alapértelmezett' : '', st.isForced ? 'kényszerített' : '', st.isExternal ? 'külső' : '', st.isHearingImpaired ? 'SDH' : '', st.path || '']);
+        else if (st.type === 'Audio') p = [channels(st.channels, st.channelLayout), st.sampleRate ? (st.sampleRate / 1000).toString().replace('.', DEC) + ' kHz' : '', mbps(st.bitRate)];
+        p = p.concat([st.isDefault ? t('default_') : '', st.isForced ? t('forced') : '', st.isExternal ? t('external') : '', st.isHearingImpaired ? 'SDH' : '', st.path || '']);
         return join(p, ', ');
     }
 
@@ -495,9 +593,9 @@
         var tr = list.filter(function (s) { return (s.output || {}).mode === 'Transcode'; }).length;
         var bw = 0;
         list.forEach(function (s) { (s.jobs || []).forEach(function (j) { bw += rates[j.id || s.sessionId] || 0; }); });
-        return '<div class="si-total"><b>' + list.length + '</b><span>lejátszás</span></div>'
-            + '<div class="si-total' + (tr ? ' is-transcode' : '') + '"><b>' + tr + '</b><span>átkódolás</span></div>'
-            + (bw ? '<div class="si-total"><b>' + mbps(bw) + '</b><span>kimenő, átkódolt</span></div>' : '');
+        return '<div class="si-total"><b>' + list.length + '</b><span>' + esc(t('tot_play')) + '</span></div>'
+            + '<div class="si-total' + (tr ? ' is-transcode' : '') + '"><b>' + tr + '</b><span>' + esc(t('tot_tr')) + '</span></div>'
+            + (bw ? '<div class="si-total"><b>' + mbps(bw) + '</b><span>' + esc(t('tot_bw')) + '</span></div>' : '');
     }
 
     function load() {
@@ -510,10 +608,10 @@
             page.querySelector('#siTotals').innerHTML = totals(list);
             lastList = list;
             render();
-            page.querySelector('#siStatus').textContent = 'Jellyfin ' + (data.serverVersion || '') + ', frissítve ' + new Date(data.generatedAtUtc).toLocaleTimeString()
-                + (data.transcodeJobsAvailable ? '' : '. Az ffmpeg adatok ebben a verzióban nem olvashatók.');
+            page.querySelector('#siStatus').textContent = t('status', { v: data.serverVersion || '', t: new Date(data.generatedAtUtc).toLocaleTimeString(LANG === 'hu' ? 'hu-HU' : undefined) })
+                + (data.transcodeJobsAvailable ? '' : t('no_jobs'));
         }, function (err) {
-            page.querySelector('#siError').innerHTML = '<div class="si-error">Nem sikerült lekérni az adatokat (' + esc(err && err.status ? 'HTTP ' + err.status : err) + '). Ellenőrizd, hogy rendszergazdaként vagy-e bejelentkezve, és hogy a plugin aktív-e.</div>';
+            page.querySelector('#siError').innerHTML = '<div class="si-error">' + esc(t('error', { e: err && err.status ? 'HTTP ' + err.status : String(err) })) + '</div>';
         });
     }
     function stop() { if (timer) { clearInterval(timer); timer = null; } }
@@ -533,6 +631,8 @@
         }, function () { });
     }
 
+    page.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+
     page.querySelector('#siGear').addEventListener('click', function () {
         var p = page.querySelector('#siSettings'), open = !p.classList.contains('open');
         p.classList.toggle('open', open);
@@ -546,8 +646,8 @@
             cfg.ShowFfmpegCommand = page.querySelector('#siShowCmd').checked;
             return ApiClient.updatePluginConfiguration(pluginId, cfg);
         }).then(function () {
-            btn.textContent = 'Mentve';
-            setTimeout(function () { btn.textContent = 'Mentés'; }, 1500);
+            btn.textContent = t('saved');
+            setTimeout(function () { btn.textContent = t('save'); }, 1500);
             start();
         });
     });
@@ -558,13 +658,13 @@
         if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggle(c.getAttribute('data-toggle')); }
     });
     page.querySelector('#siSessions').addEventListener('click', function (e) {
-        var t = e.target.closest('[data-toggle]');
-        if (t) { toggle(t.getAttribute('data-toggle')); return; }
+        var tg = e.target.closest('[data-toggle]');
+        if (tg) { toggle(tg.getAttribute('data-toggle')); return; }
         var b = e.target.closest('.si-copy');
         if (!b) return;
         navigator.clipboard.writeText(b.getAttribute('data-cmd')).then(function () {
-            b.textContent = 'Kimásolva';
-            setTimeout(function () { b.textContent = 'Másolás'; }, 1500);
+            b.textContent = t('copied');
+            setTimeout(function () { b.textContent = t('copy'); }, 1500);
         });
     });
 
