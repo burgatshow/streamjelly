@@ -10,7 +10,7 @@
   "timestamp": "2026-11-05T00:00:00.0000000Z",
   "version": "1.6.0.0",
   "status": "Active",
-  "autoUpdate": false,
+  "autoUpdate": true,
   "imagePath": "thumb.png",
   "assemblies": [
     "Jellyfin.Plugin.StreamJelly.dll"

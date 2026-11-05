@@ -16,6 +16,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 - Plugin description (`meta.json`, plugin list) is now in English.
 - API: the descriptive texts of the per-stream decisions (`to`, `note`) are now in English; the API is language independent.
 - `build.sh` comments in English.
+- `meta.json`: `autoUpdate` is now `true`, so Jellyfin's *Update Plugins* task installs new versions from the repository.
 
 ### [1.5.0] – 2026-11-05
 #### Changed
@@ -79,6 +80,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 - A plugin leírása (`meta.json`, bővítménylista) angol lett.
 - API: a sávonkénti döntések leíró szövegei (`to`, `note`) angolok lettek; az API nyelvfüggetlen.
 - A `build.sh` megjegyzései angolul.
+- `meta.json`: az `autoUpdate` mostantól `true`, így a Jellyfin *Bővítmények frissítése* ütemezett feladata telepíti az új verziókat az adattárból.
 
 ### [1.5.0] – 2026-11-05
 #### Változott
