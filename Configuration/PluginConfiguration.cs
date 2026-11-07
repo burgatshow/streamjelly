@@ -12,4 +12,7 @@ public class PluginConfiguration : BasePluginConfiguration
 
     /// <summary>Gets or sets a value indicating whether the full ffmpeg command line is returned.</summary>
     public bool ShowFfmpegCommand { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether an approximate preview picture (from trickplay images) is shown.</summary>
+    public bool ShowPreview { get; set; }
 }

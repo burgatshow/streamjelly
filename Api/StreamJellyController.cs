@@ -6,11 +6,13 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using MediaBrowser.Common.Api;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.MediaEncoding;
 using MediaBrowser.Controller.Session;
+using MediaBrowser.Controller.Trickplay;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Session;
@@ -42,6 +44,7 @@ public class StreamJellyController : ControllerBase
     private readonly IMediaSourceManager _mediaSourceManager;
     private readonly ITranscodeManager _transcodeManager;
     private readonly IServerApplicationHost _appHost;
+    private readonly ITrickplayManager _trickplayManager;
     private readonly ILogger<StreamJellyController> _logger;
 
     public StreamJellyController(
@@ -49,12 +52,14 @@ public class StreamJellyController : ControllerBase
         IMediaSourceManager mediaSourceManager,
         ITranscodeManager transcodeManager,
         IServerApplicationHost appHost,
+        ITrickplayManager trickplayManager,
         ILogger<StreamJellyController> logger)
     {
         _sessionManager = sessionManager;
         _mediaSourceManager = mediaSourceManager;
         _transcodeManager = transcodeManager;
         _appHost = appHost;
+        _trickplayManager = trickplayManager;
         _logger = logger;
     }
 
@@ -64,7 +69,7 @@ public class StreamJellyController : ControllerBase
     /// <returns>The sessions payload.</returns>
     [HttpGet("Sessions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult GetSessions()
+    public async Task<ActionResult> GetSessions()
     {
         var config = Plugin.Instance?.Configuration ?? new PluginConfiguration();
         var jobs = GetActiveTranscodingJobs(out var jobsAvailable);
@@ -74,14 +79,21 @@ public class StreamJellyController : ControllerBase
             GeneratedAtUtc = DateTime.UtcNow,
             RefreshSeconds = Math.Clamp(config.RefreshSeconds, 1, 60),
             ServerVersion = _appHost.ApplicationVersionString,
-            TranscodeJobsAvailable = jobsAvailable
+            TranscodeJobsAvailable = jobsAvailable,
+            ShowPreview = config.ShowPreview
         };
 
         foreach (var session in _sessionManager.Sessions.Where(s => s.NowPlayingItem is not null))
         {
             try
             {
-                response.Sessions.Add(BuildSession(session, jobs, config));
+                var dto = BuildSession(session, jobs, config);
+                if (config.ShowPreview)
+                {
+                    dto.Preview = await BuildPreviewAsync(session).ConfigureAwait(false);
+                }
+
+                response.Sessions.Add(dto);
             }
             catch (Exception ex)
             {
@@ -92,7 +104,7 @@ public class StreamJellyController : ControllerBase
                     UserName = session.UserName,
                     Client = session.Client,
                     DeviceName = session.DeviceName,
-                    ItemName = session.NowPlayingItem?.Name + " (hiba: " + ex.Message + ")"
+                    ItemName = session.NowPlayingItem?.Name + " (error: " + ex.Message + ")"
                 });
             }
         }
@@ -192,6 +204,70 @@ public class StreamJellyController : ControllerBase
 
         dto.Decisions = BuildDecisions(dto, jobs.Count > 0 ? dto.Jobs[0].Hints : null);
         return dto;
+    }
+
+    /// <summary>
+    /// Approximate picture of the current playback position, from the item's trickplay images
+    /// (the thumbnails Jellyfin shows when seeking). The closest thumbnail before the reported
+    /// position is located inside its tile sheet; the client crops it out of the tile image.
+    /// </summary>
+    private async Task<PreviewInfo> BuildPreviewAsync(SessionInfo session)
+    {
+        var item = session.NowPlayingItem;
+        var state = session.PlayState ?? new PlayerStateInfo();
+        var preview = new PreviewInfo();
+        if (item is null || state.PositionTicks is null)
+        {
+            return preview;
+        }
+
+        // Trickplay images belong to the media source (an item with several versions has them per version).
+        var itemId = Guid.TryParse(state.MediaSourceId, out var sourceId) && sourceId != Guid.Empty ? sourceId : item.Id;
+        try
+        {
+            var resolutions = await _trickplayManager.GetTrickplayResolutions(itemId).ConfigureAwait(false);
+            if ((resolutions is null || resolutions.Count == 0) && itemId != item.Id)
+            {
+                itemId = item.Id;
+                resolutions = await _trickplayManager.GetTrickplayResolutions(itemId).ConfigureAwait(false);
+            }
+
+            if (resolutions is null || resolutions.Count == 0)
+            {
+                return preview;
+            }
+
+            // The smallest resolution at least 320 px wide, else the largest one.
+            var info = resolutions.Values.Where(r => r.Width >= 320).OrderBy(r => r.Width).FirstOrDefault()
+                       ?? resolutions.Values.OrderByDescending(r => r.Width).First();
+            if (info.Interval <= 0 || info.ThumbnailCount <= 0 || info.TileWidth <= 0 || info.TileHeight <= 0)
+            {
+                return preview;
+            }
+
+            var positionMs = state.PositionTicks.Value / TimeSpan.TicksPerMillisecond;
+            var thumb = (int)Math.Clamp(positionMs / info.Interval, 0, info.ThumbnailCount - 1);
+            var perTile = info.TileWidth * info.TileHeight;
+            var inTile = thumb % perTile;
+
+            preview.Available = true;
+            preview.ItemId = itemId.ToString("N");
+            preview.Width = info.Width;
+            preview.Height = info.Height;
+            preview.TileColumns = info.TileWidth;
+            preview.TileRows = info.TileHeight;
+            preview.TileIndex = thumb / perTile;
+            preview.Column = inTile % info.TileWidth;
+            preview.Row = inTile / info.TileWidth;
+            preview.PositionTicks = (long)thumb * info.Interval * TimeSpan.TicksPerMillisecond;
+            preview.IntervalMs = info.Interval;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "StreamJelly: could not read trickplay info for {ItemId}", itemId);
+        }
+
+        return preview;
     }
 
     private MediaSourceInfo? ResolveMediaSource(SessionInfo session, PlayerStateInfo state, List<TranscodingJob> jobs)

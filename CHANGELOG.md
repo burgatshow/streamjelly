@@ -8,6 +8,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.7.0] – 2026-11-07
+#### Added
+- Approximate preview of the playback position in the expanded view: the trickplay thumbnail (the picture Jellyfin shows when seeking) closest to the position the client last reported, with its time. Off by default; turn it on with *Show approximate preview* in the settings.
+- Needs trickplay images for the video (library setting *Enable trickplay image extraction*); without them the view says there is no preview.
+- API: `showPreview` in the response, `preview` per session (trickplay resolution, tile sheet index, column and row).
+
+#### Fixed
+- The error text of a session that could not be inspected was partly Hungarian in the API.
+
 ### [1.6.0] – 2026-11-05
 #### Added
 - English user interface. The dashboard page follows the Jellyfin display language: Hungarian for Hungarian, English for every other language. All labels, states, transcode reasons, messages and number formats (decimal separator, time) are translated.
@@ -71,6 +80,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.7.0] – 2026-11-07
+#### Új
+- Megközelítő előnézet a lejátszás helyéről a kibontott nézetben: a kliens által utoljára jelentett pozícióhoz legközelebbi trickplay kép (amit a Jellyfin tekeréskor mutat), az időpontjával. Alapból ki van kapcsolva; a beállításokban a *Megközelítő előnézet mutatása* kapcsolja be.
+- A videóhoz trickplay képek kellenek (könyvtárbeállítás: *Trickplay képek kinyerésének engedélyezése*); ezek nélkül a nézet jelzi, hogy nincs előnézet.
+- API: `showPreview` a válaszban, munkamenetenként `preview` (trickplay felbontás, tile sheet sorszáma, oszlop és sor).
+
+#### Javítva
+- A nem elemezhető munkamenet hibaszövege az API-ban részben magyar volt.
 
 ### [1.6.0] – 2026-11-05
 #### Új

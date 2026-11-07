@@ -15,6 +15,8 @@ public class SessionsResponse
 
     public bool TranscodeJobsAvailable { get; set; }
 
+    public bool ShowPreview { get; set; }
+
     public List<SessionStreamInfo> Sessions { get; set; } = new();
 }
 
@@ -75,6 +77,8 @@ public class SessionStreamInfo
     public List<StreamDecision> Decisions { get; set; } = new();
 
     public List<TranscodeJobInfo> Jobs { get; set; } = new();
+
+    public PreviewInfo? Preview { get; set; }
 }
 
 public class SourceInfo
@@ -291,4 +295,40 @@ public class FfmpegHints
     public bool ToneMapping { get; set; }
 
     public List<string> Maps { get; set; } = new();
+}
+
+/// <summary>
+/// Approximate preview of the playback position: one thumbnail of a trickplay tile sheet
+/// (<c>GET /Videos/{ItemId}/Trickplay/{Width}/{TileIndex}.jpg</c>), at <see cref="Column"/> / <see cref="Row"/>.
+/// </summary>
+public class PreviewInfo
+{
+    /// <summary>Gets or sets a value indicating whether trickplay images exist for the item.</summary>
+    public bool Available { get; set; }
+
+    public string? ItemId { get; set; }
+
+    /// <summary>Gets or sets the width of one thumbnail (also the trickplay resolution).</summary>
+    public int Width { get; set; }
+
+    /// <summary>Gets or sets the height of one thumbnail.</summary>
+    public int Height { get; set; }
+
+    /// <summary>Gets or sets the number of thumbnails per row in a tile sheet.</summary>
+    public int TileColumns { get; set; }
+
+    /// <summary>Gets or sets the number of thumbnail rows in a tile sheet.</summary>
+    public int TileRows { get; set; }
+
+    public int TileIndex { get; set; }
+
+    public int Column { get; set; }
+
+    public int Row { get; set; }
+
+    /// <summary>Gets or sets the position the thumbnail was taken at.</summary>
+    public long PositionTicks { get; set; }
+
+    /// <summary>Gets or sets the time between two thumbnails, in milliseconds.</summary>
+    public int IntervalMs { get; set; }
 }

@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/burgatshow/streamjelly/main/assets/thumb.png",
     "versions": [
       {
+        "version": "1.7.0.0",
+        "changelog": "#### Added\n- Approximate preview of the playback position in the expanded view: the trickplay thumbnail (the picture Jellyfin shows when seeking) closest to the position the client last reported, with its time. Off by default; turn it on with *Show approximate preview* in the settings.\n- Needs trickplay images for the video (library setting *Enable trickplay image extraction*); without them the view says there is no preview.\n- API: `showPreview` in the response, `preview` per session (trickplay resolution, tile sheet index, column and row).\n\n#### Fixed\n- The error text of a session that could not be inspected was partly Hungarian in the API.",
+        "targetAbi": "12.4.0.0",
+        "sourceUrl": "https://github.com/burgatshow/streamjelly/releases/download/v1.7.0/streamjelly_1.7.0.0.zip",
+        "checksum": "b950e9a244b5aa5467a976ea5d70464d",
+        "timestamp": "2026-11-07T17:34:08.0000000Z"
+      },
+      {
         "version": "1.6.0.0",
         "changelog": "#### Added\n- English user interface. The dashboard page follows the Jellyfin display language: Hungarian for Hungarian, English for every other language. All labels, states, transcode reasons, messages and number formats (decimal separator, time) are translated.\n\n#### Changed\n- Plugin description (`meta.json`, plugin list) is now in English.\n- API: the descriptive texts of the per-stream decisions (`to`, `note`) are now in English; the API is language independent.\n- `build.sh` comments in English.\n- `meta.json`: `autoUpdate` is now `true`, so Jellyfin's *Update Plugins* task installs new versions from the repository.",
         "targetAbi": "12.4.0.0",

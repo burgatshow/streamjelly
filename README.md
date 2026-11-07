@@ -21,6 +21,7 @@ The page lives in the Jellyfin dashboard (left menu → *StreamJelly*), is visib
 - **Live numbers** – current bandwidth to the client, target bitrate, encoding speed (e.g. `4.0×`), how far ahead the transcode is, data downloaded, hardware acceleration. Values that indicate trouble (encoding speed near 1×, small buffer) turn red.
 - **Transcode reasons** – what the client does not support (video codec, subtitle format, bitrate limit…).
 - **Client report** – the audio and subtitle track the client last reported, and when.
+- **Approximate preview** (optional) – the trickplay thumbnail closest to the current playback position. Needs trickplay images for the video.
 - **Details** – source file info, every stream of the file (HDR / Dolby Vision type, bit depth, pixel format, colour space, channel layout…), ffmpeg encoder settings and the full ffmpeg command line with a copy button.
 - **Totals** – number of playbacks, transcodes and the total outgoing transcoded bandwidth.
 
@@ -86,7 +87,7 @@ Download `streamjelly_<version>.zip` from [Releases](https://github.com/burgatsh
 
 ### Settings
 
-Under *Beállítások* (Settings) on the page: auto refresh and its interval, whether file system paths and the ffmpeg command are shown.
+Under *Beállítások* (Settings) on the page: auto refresh and its interval, whether file system paths, the ffmpeg command and the approximate preview are shown.
 
 ### API
 
@@ -144,6 +145,7 @@ Az oldal a Jellyfin Vezérlőpultjában van (bal oldali menü → *StreamJelly*)
 - **Élő számok** – aktuális sávszélesség a kliens felé, cél bitráta, kódolási sebesség (pl. `4,0×`), mennyi van előre átkódolva, letöltött adat, hardveres gyorsítás. A problémát jelző értékek (1× körüli sebesség, kevés puffer) pirosak.
 - **Átkódolás okai** – mit nem támogat a kliens (videó kodek, felirat formátum, bitráta-limit…).
 - **Kliens jelentése** – melyik hang- és feliratsávot jelentette utoljára a kliens, és mikor.
+- **Megközelítő előnézet** (bekapcsolható) – a lejátszás aktuális helyéhez legközelebbi trickplay kép. A videóhoz trickplay képek kellenek.
 - **Részletek** – forrásfájl adatai, a fájl összes stream-je (HDR / Dolby Vision, bitmélység, pixel formátum, színtér, csatornakiosztás…), ffmpeg encoder beállítások és a teljes ffmpeg parancs, másolás gombbal.
 - **Összesítő** – lejátszások és átkódolások száma, összes kimenő átkódolt sávszélesség.
 
@@ -207,7 +209,7 @@ Töltsd le a `streamjelly_<verzió>.zip`-et a [Releases](https://github.com/burg
 
 ### Beállítások
 
-Az oldalon a *Beállítások* gomb alatt: automatikus frissítés és gyakorisága, fájlútvonalak és az ffmpeg parancs megjelenítése.
+Az oldalon a *Beállítások* gomb alatt: automatikus frissítés és gyakorisága, fájlútvonalak, az ffmpeg parancs és a megközelítő előnézet megjelenítése.
 
 ### API
 

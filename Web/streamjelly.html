@@ -73,6 +73,10 @@
 #StreamJellyPage .si-name { font-size: 1.55em; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; margin: 0 0 .55em; }
 #StreamJellyPage .si-who { display: flex; flex-wrap: wrap; gap: .4em; }
 #StreamJellyPage .si-chip { font-size: .8em; padding: .25em .65em; border-radius: 999px; background: rgba(255,255,255,.08); color: #d5d9de; white-space: nowrap; }
+#StreamJellyPage .si-preview { flex: none; align-self: center; width: 256px; text-align: center; }
+#StreamJellyPage .si-preview-img { width: 100%; border-radius: 8px; background-color: rgba(0,0,0,.4); background-repeat: no-repeat; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
+#StreamJellyPage .si-preview-cap { font-size: .75em; color: var(--si-muted); margin-top: .4em; }
+#StreamJellyPage .si-preview-none { font-size: .78em; color: var(--si-muted); max-width: 200px; text-align: center; }
 #StreamJellyPage .si-mode { text-align: right; flex: none; align-self: flex-start; }
 #StreamJellyPage .si-mode-name { display: inline-block; font-weight: 700; font-size: .95em; padding: .35em .85em; border-radius: 999px; border: 1.5px solid currentColor; }
 #StreamJellyPage .si-mode-note { color: var(--si-muted); font-size: .8em; margin-top: .45em; }
@@ -162,6 +166,7 @@
     #StreamJellyPage .si-totals { margin-left: 0; }
     #StreamJellyPage .si-hero { flex-wrap: wrap; padding: 1.2em; }
     #StreamJellyPage .si-poster { width: 64px; }
+    #StreamJellyPage .si-preview { width: 100%; max-width: 320px; }
     #StreamJellyPage .si-mode { text-align: left; width: 100%; }
     #StreamJellyPage .si-path, #StreamJellyPage .si-time, #StreamJellyPage .si-reasons { padding-left: 1.2em; padding-right: 1.2em; }
     #StreamJellyPage .si-path-head { display: none; }
@@ -188,6 +193,7 @@
         <label><span data-i18n="interval">Every</span> <input type="number" id="siInterval" min="1" max="60" value="3"> <span data-i18n="sec">s</span></label>
         <label><input type="checkbox" id="siShowPaths"> <span data-i18n="show_paths">Show file paths</span></label>
         <label><input type="checkbox" id="siShowCmd"> <span data-i18n="show_cmd">Show ffmpeg command</span></label>
+        <label><input type="checkbox" id="siShowPreview"> <span data-i18n="show_preview">Show approximate preview</span></label>
         <button type="button" class="si-save" id="siSave" data-i18n="save">Save</button>
     </div>
 
@@ -217,7 +223,8 @@
     var I18N = {
         en: {
             loading: 'Loading…', settings: 'Settings', auto_refresh: 'Auto refresh', interval: 'Every', sec: 's', min: 'min',
-            show_paths: 'Show file paths', show_cmd: 'Show ffmpeg command', save: 'Save', saved: 'Saved',
+            show_paths: 'Show file paths', show_cmd: 'Show ffmpeg command', show_preview: 'Show approximate preview',
+            preview_cap: '≈ {t}, approximate preview', no_trickplay: 'No preview: this video has no trickplay images.', save: 'Save', saved: 'Saved',
             open_details: 'Open details', collapse: 'Collapse', episode: 'season {s}, episode {e}',
             empty_title: 'Nobody is watching anything right now', empty_text: 'As soon as playback starts, you will see here what the client receives.',
             paused: 'Paused', track: 'Playback', track_buf: ' / transcoded',
@@ -263,7 +270,8 @@
         },
         hu: {
             loading: 'Betöltés…', settings: 'Beállítások', auto_refresh: 'Automatikus frissítés', interval: 'Gyakoriság', sec: 'mp', min: 'perc',
-            show_paths: 'Fájlútvonalak mutatása', show_cmd: 'ffmpeg parancs mutatása', save: 'Mentés', saved: 'Mentve',
+            show_paths: 'Fájlútvonalak mutatása', show_cmd: 'ffmpeg parancs mutatása', show_preview: 'Megközelítő előnézet mutatása',
+            preview_cap: '≈ {t}, megközelítő előnézet', no_trickplay: 'Nincs előnézet: ehhez a videóhoz nincsenek trickplay képek.', save: 'Mentés', saved: 'Mentve',
             open_details: 'Részletek megnyitása', collapse: 'Összecsukás', episode: '{s}. évad {e}. rész',
             empty_title: 'Most senki nem néz semmit', empty_text: 'Amint elindul egy lejátszás, itt látod, mit kap a kliens.',
             paused: 'Szünetel', track: 'Lejátszás', track_buf: ' / átkódolva',
@@ -463,6 +471,7 @@
             + (s.deviceName ? '<span class="si-chip">' + esc(s.deviceName) + '</span>' : '')
             + (s.remoteEndPoint ? '<span class="si-chip">' + esc(s.remoteEndPoint) + '</span>' : '')
             + '</div></div>';
+        h += preview(s);
         h += '<div class="si-mode"><button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">' + esc(t('collapse')) + '</button><br><div class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</div>'
             + '<div class="si-mode-note">' + esc(modeNote[mode] || '') + '</div></div>';
         h += '</div>';
@@ -551,6 +560,19 @@
         h += '</div></details></article>';
         return h;
     }
+    /** Approximate picture of the playback position: one thumbnail cropped out of a trickplay tile sheet. */
+    function preview(s) {
+        var p = s.preview;
+        if (!p) return '';
+        if (!p.available) return '<div class="si-preview"><div class="si-preview-none">' + esc(t('no_trickplay')) + '</div></div>';
+        var url = ApiClient.getUrl('Videos/' + p.itemId + '/Trickplay/' + p.width + '/' + p.tileIndex + '.jpg', { ApiKey: ApiClient.accessToken() });
+        var x = p.tileColumns > 1 ? p.column / (p.tileColumns - 1) * 100 : 0;
+        var y = p.tileRows > 1 ? p.row / (p.tileRows - 1) * 100 : 0;
+        return '<div class="si-preview"><div class="si-preview-img" style="aspect-ratio:' + p.width + '/' + p.height
+            + ';background-image:url(\'' + url + '\');background-size:' + (p.tileColumns * 100) + '% ' + (p.tileRows * 100) + '%'
+            + ';background-position:' + x.toFixed(4) + '% ' + y.toFixed(4) + '%"></div>'
+            + '<div class="si-preview-cap">' + esc(t('preview_cap', { t: clock(p.positionTicks) })) + '</div></div>';
+    }
     function report(s) {
         if (!s.hasProgressReport) return '<div class="si-report stale">' + esc(t('no_report')) + '</div>';
         var ago = Math.max(0, Math.round((Date.now() - new Date(s.lastReportUtc).getTime()) / 1000));
@@ -628,6 +650,7 @@
             page.querySelector('#siInterval').value = cfg.RefreshSeconds || 3;
             page.querySelector('#siShowPaths').checked = !!cfg.ShowPaths;
             page.querySelector('#siShowCmd').checked = !!cfg.ShowFfmpegCommand;
+            page.querySelector('#siShowPreview').checked = !!cfg.ShowPreview;
         }, function () { });
     }
 
@@ -644,6 +667,7 @@
             cfg.RefreshSeconds = parseInt(page.querySelector('#siInterval').value, 10) || 3;
             cfg.ShowPaths = page.querySelector('#siShowPaths').checked;
             cfg.ShowFfmpegCommand = page.querySelector('#siShowCmd').checked;
+            cfg.ShowPreview = page.querySelector('#siShowPreview').checked;
             return ApiClient.updatePluginConfiguration(pluginId, cfg);
         }).then(function () {
             btn.textContent = t('saved');
