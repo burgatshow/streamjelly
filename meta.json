@@ -1,6 +1,6 @@
 {
   "category": "General",
-  "changelog": "1.7.0.0 – approximate preview of the playback position",
+  "changelog": "1.7.1.0 – tidier detailed view",
   "description": "Shows what the server really streams to each client: direct play, remux or transcode, per stream, with live ffmpeg details.",
   "guid": "7cbb0962-443d-4821-92f1-86085e90ded5",
   "name": "StreamJelly",
@@ -8,7 +8,7 @@
   "owner": "burgatshow",
   "targetAbi": "12.4.0.0",
   "timestamp": "2026-11-05T00:00:00.0000000Z",
-  "version": "1.7.0.0",
+  "version": "1.7.1.0",
   "status": "Active",
   "autoUpdate": true,
   "imagePath": "thumb.png",

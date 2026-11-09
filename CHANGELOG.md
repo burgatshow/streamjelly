@@ -8,6 +8,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.7.1] – 2026-11-10
+#### Changed
+- Tidier detailed view of a playback:
+  - header: playback mode and *Collapse* side by side;
+  - the live numbers and the approximate preview moved into the header, in a compact box next to the title;
+  - sections one under the other instead of columns: *Streams*, then the details;
+  - *Streams*: one row per stream, left-aligned: source → what the client receives, the server's decision, then the source and client details on their own lines; the client report and the transcode reasons below;
+  - details as tabs at the bottom (source file, output, ffmpeg, all streams, ffmpeg command), all closed by default.
+- *All streams*: the streams of the file grouped by type (video, audio, subtitle), one under the other, instead of one table; the ones in use come first, framed and marked *in use*, the others dimmed; language and title next to the format, properties on a second line.
+
 ### [1.7.0] – 2026-11-07
 #### Added
 - Approximate preview of the playback position in the expanded view: the trickplay thumbnail (the picture Jellyfin shows when seeking) closest to the position the client last reported, with its time. Off by default; turn it on with *Show approximate preview* in the settings.
@@ -80,6 +90,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.7.1] – 2026-11-10
+#### Változott
+- Rendezettebb részletes nézet:
+  - fejléc: a lejátszási mód és az *Összecsukás* egymás mellett;
+  - az élő számok és a megközelítő előnézet a fejlécbe kerültek, egy kompakt dobozba a cím mellé;
+  - oszlopok helyett egymás alatti szekciók: *Stream-ek*, majd a részletek;
+  - *Stream-ek*: stream-enként egy sor, balra igazítva: forrás → amit a kliens kap, a szerver döntése, alatta külön sorban a forrás és a kliens részletei; alul a kliens jelentése és az átkódolás okai;
+  - a részletek alul füleken (forrásfájl, kimenet, ffmpeg, összes stream, ffmpeg parancs), alapból mind zárva.
+- *Összes stream*: a fájl stream-jei típus szerint csoportosítva (videó, hang, felirat), egymás alatt, egyetlen táblázat helyett; a használatban lévők elöl, kerettel és *használatban* jelöléssel, a többi halványítva; a nyelv és a cím a formátum mellett, a jellemzők külön sorban.
 
 ### [1.7.0] – 2026-11-07
 #### Új

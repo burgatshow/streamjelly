@@ -22,7 +22,7 @@ The page lives in the Jellyfin dashboard (left menu → *StreamJelly*), is visib
 - **Transcode reasons** – what the client does not support (video codec, subtitle format, bitrate limit…).
 - **Client report** – the audio and subtitle track the client last reported, and when.
 - **Approximate preview** (optional) – the trickplay thumbnail closest to the current playback position. Needs trickplay images for the video.
-- **Details** – source file info, every stream of the file (HDR / Dolby Vision type, bit depth, pixel format, colour space, channel layout…), ffmpeg encoder settings and the full ffmpeg command line with a copy button.
+- **Details** (tabs: source file, output, ffmpeg, all streams, ffmpeg command) – source file info, every stream of the file (HDR / Dolby Vision type, bit depth, pixel format, colour space, channel layout…), ffmpeg encoder settings and the full ffmpeg command line with a copy button.
 - **Totals** – number of playbacks, transcodes and the total outgoing transcoded bandwidth.
 
 ![Expanded card](docs/expanded.png)
@@ -146,7 +146,7 @@ Az oldal a Jellyfin Vezérlőpultjában van (bal oldali menü → *StreamJelly*)
 - **Átkódolás okai** – mit nem támogat a kliens (videó kodek, felirat formátum, bitráta-limit…).
 - **Kliens jelentése** – melyik hang- és feliratsávot jelentette utoljára a kliens, és mikor.
 - **Megközelítő előnézet** (bekapcsolható) – a lejátszás aktuális helyéhez legközelebbi trickplay kép. A videóhoz trickplay képek kellenek.
-- **Részletek** – forrásfájl adatai, a fájl összes stream-je (HDR / Dolby Vision, bitmélység, pixel formátum, színtér, csatornakiosztás…), ffmpeg encoder beállítások és a teljes ffmpeg parancs, másolás gombbal.
+- **Részletek** (füleken: forrásfájl, kimenet, ffmpeg, összes stream, ffmpeg parancs) – forrásfájl adatai, a fájl összes stream-je (HDR / Dolby Vision, bitmélység, pixel formátum, színtér, csatornakiosztás…), ffmpeg encoder beállítások és a teljes ffmpeg parancs, másolás gombbal.
 - **Összesítő** – lejátszások és átkódolások száma, összes kimenő átkódolt sávszélesség.
 
 ### Állapotok

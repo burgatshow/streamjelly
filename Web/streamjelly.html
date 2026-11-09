@@ -62,9 +62,9 @@
 #StreamJellyPage .si-card-progress .si-track { height: 3px; }
 #StreamJellyPage .si-card-progress .t { display: flex; justify-content: space-between; font-size: .74em; color: var(--si-muted); margin-top: .35em; }
 #StreamJellyPage .si-card.is-paused .si-track b { background: var(--si-muted); }
-#StreamJellyPage .si-collapse { background: rgba(255,255,255,.08); border: 0; color: var(--si-text); border-radius: 999px; padding: .35em .9em; font: inherit; font-size: .8em; cursor: pointer; margin-bottom: .7em; }
+#StreamJellyPage .si-collapse { background: rgba(255,255,255,.08); border: 0; color: var(--si-text); border-radius: 999px; padding: .4em .9em; font: inherit; font-size: .8em; cursor: pointer; }
 #StreamJellyPage .si-collapse:hover { background: rgba(255,255,255,.16); }
-#StreamJellyPage .si-hero { position: relative; display: flex; gap: 1.4em; align-items: flex-end; padding: 1.6em 1.6em 1.3em; min-height: 170px; isolation: isolate; }
+#StreamJellyPage .si-hero { position: relative; display: flex; gap: 1.4em; align-items: flex-end; padding: 1.4em 1.6em 1.2em; isolation: isolate; }
 #StreamJellyPage .si-hero-bg { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center 25%; opacity: .38; }
 #StreamJellyPage .si-hero-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,18,22,.96) 0%, rgba(16,18,22,.75) 45%, rgba(16,18,22,.35) 100%), linear-gradient(0deg, rgba(16,18,22,1) 0%, rgba(16,18,22,0) 60%); }
 #StreamJellyPage .si-poster { width: 92px; aspect-ratio: 2/3; border-radius: 8px; background: var(--si-faint) center/cover; flex: none; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
@@ -78,6 +78,7 @@
 #StreamJellyPage .si-preview-cap { font-size: .75em; color: var(--si-muted); margin-top: .4em; }
 #StreamJellyPage .si-preview-none { font-size: .78em; color: var(--si-muted); max-width: 200px; text-align: center; }
 #StreamJellyPage .si-mode { text-align: right; flex: none; align-self: flex-start; }
+#StreamJellyPage .si-actions { display: flex; gap: .6em; align-items: center; justify-content: flex-end; }
 #StreamJellyPage .si-mode-name { display: inline-block; font-weight: 700; font-size: .95em; padding: .35em .85em; border-radius: 999px; border: 1.5px solid currentColor; }
 #StreamJellyPage .si-mode-note { color: var(--si-muted); font-size: .8em; margin-top: .45em; }
 #StreamJellyPage .m-DirectPlay { color: var(--si-direct); }
@@ -91,56 +92,54 @@
 #StreamJellyPage .si-track b { position: absolute; inset: 0 auto 0 0; background: var(--si-brand); border-radius: 4px; }
 #StreamJellyPage .si-paused { color: var(--si-text); font-weight: 600; }
 
-/* ---------- signal path ---------- */
-#StreamJellyPage .si-path { padding: .4em 1.6em 1.4em; }
-#StreamJellyPage .si-path-head, #StreamJellyPage .si-lane { display: grid; grid-template-columns: 1fr minmax(150px, 210px) 1fr; align-items: center; }
-#StreamJellyPage .si-path-head { color: var(--si-muted); font-size: .8em; padding-bottom: .5em; }
-#StreamJellyPage .si-path-head div:last-child { text-align: right; }
-#StreamJellyPage .si-path-head div:nth-child(2) { text-align: center; }
-#StreamJellyPage .si-lane { padding: .75em 0; border-top: 1px solid var(--si-faint); --c: var(--si-muted); }
+/* ---------- streams: one row per stream ---------- */
+#StreamJellyPage .si-lane { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: .2em 1em; padding: .8em 0; border-top: 1px solid var(--si-faint); --c: var(--si-muted); }
+#StreamJellyPage .si-path .si-lane:first-child { border-top: 0; padding-top: .3em; }
 #StreamJellyPage .si-lane.d-Direct { --c: var(--si-direct); }
 #StreamJellyPage .si-lane.d-Copy, #StreamJellyPage .si-lane.d-Separate { --c: var(--si-copy); }
 #StreamJellyPage .si-lane.d-Transcode { --c: var(--si-transcode); }
 #StreamJellyPage .si-lane.d-BurnIn { --c: var(--si-burn); }
-#StreamJellyPage .si-end .k { font-size: .75em; color: var(--si-muted); }
-#StreamJellyPage .si-end .v { font-size: 1.12em; font-weight: 650; margin: .05em 0; }
-#StreamJellyPage .si-end .s { font-size: .84em; color: #b8bec6; }
-#StreamJellyPage .si-end.out { text-align: right; }
-#StreamJellyPage .si-end.out .v { color: var(--c); }
-#StreamJellyPage .si-wire { position: relative; height: 30px; margin: 0 1em; display: flex; align-items: center; justify-content: center; }
-#StreamJellyPage .si-wire::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; transform: translateY(-50%);
-    background: repeating-linear-gradient(90deg, var(--c) 0 10px, transparent 10px 16px); opacity: .55; }
-#StreamJellyPage .si-wire::after { content: ""; position: absolute; right: -2px; top: 50%; width: 8px; height: 8px; border-top: 2px solid var(--c); border-right: 2px solid var(--c); transform: translateY(-50%) rotate(45deg); opacity: .8; }
-#StreamJellyPage .si-session.is-live .si-wire::before { animation: si-flow 1.1s linear infinite; }
-#StreamJellyPage .si-node { position: relative; z-index: 1; background: #1b1e23; color: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: .2em .8em; font-size: .78em; font-weight: 700; white-space: nowrap; }
-@keyframes si-flow { from { background-position: 0 0; } to { background-position: 16px 0; } }
-@media (prefers-reduced-motion: reduce) { #StreamJellyPage .si-session.is-live .si-wire::before { animation: none; } }
+#StreamJellyPage .si-lk { color: var(--si-muted); font-size: .85em; padding-top: .15em; }
+#StreamJellyPage .si-lk small { display: block; font-size: .9em; opacity: .8; }
+#StreamJellyPage .si-lv { display: flex; flex-wrap: wrap; align-items: center; gap: .3em .7em; font-size: 1.05em; font-weight: 650; }
+#StreamJellyPage .si-out { color: var(--c); }
+#StreamJellyPage .si-flow { position: relative; width: 44px; height: 12px; flex: none; }
+#StreamJellyPage .si-flow::before { content: ""; position: absolute; left: 0; right: 4px; top: 50%; height: 2px; transform: translateY(-50%);
+    background: repeating-linear-gradient(90deg, var(--c) 0 6px, transparent 6px 10px); opacity: .7; }
+#StreamJellyPage .si-flow::after { content: ""; position: absolute; right: 1px; top: 50%; width: 7px; height: 7px; border-top: 2px solid var(--c); border-right: 2px solid var(--c); transform: translateY(-50%) rotate(45deg); }
+#StreamJellyPage .si-session.is-live .si-flow::before { animation: si-flow .9s linear infinite; }
+#StreamJellyPage .si-node { color: var(--c); border: 1.5px solid var(--c); border-radius: 999px; padding: .1em .65em; font-size: .72em; font-weight: 700; white-space: nowrap; }
+#StreamJellyPage .si-ls { grid-column: 2; font-size: .84em; color: #b8bec6; }
+#StreamJellyPage .si-ls span { color: var(--si-muted); display: inline-block; min-width: 7.5em; }
+@keyframes si-flow { from { background-position: 0 0; } to { background-position: 10px 0; } }
+@media (prefers-reduced-motion: reduce) { #StreamJellyPage .si-session.is-live .si-flow::before { animation: none; } }
 
-#StreamJellyPage .si-report { padding: 0 1.6em 1.2em; font-size: .82em; color: var(--si-muted); }
+#StreamJellyPage .si-report { padding: .8em 0 0; margin-top: .2em; border-top: 1px solid var(--si-faint); font-size: .82em; color: var(--si-muted); }
 #StreamJellyPage .si-report.stale { color: #ffd08a; }
-#StreamJellyPage .si-reasons { display: flex; flex-wrap: wrap; gap: .45em; align-items: center; padding: 0 1.6em 1.3em; font-size: .85em; }
+#StreamJellyPage .si-reasons { display: flex; flex-wrap: wrap; gap: .45em; align-items: center; padding: .8em 0 0; font-size: .85em; }
 #StreamJellyPage .si-reasons > span:first-child { color: var(--si-muted); margin-right: .2em; }
 #StreamJellyPage .si-reason { padding: .25em .7em; border-radius: 6px; background: rgba(255,178,63,.12); color: #ffd08a; }
 
-/* ---------- live numbers ---------- */
-#StreamJellyPage .si-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 1px solid var(--si-line); }
-#StreamJellyPage .si-stat { padding: 1em 1.6em; border-right: 1px solid var(--si-faint); }
-#StreamJellyPage .si-stat:last-child { border-right: 0; }
-#StreamJellyPage .si-stat b { display: block; font-size: 1.25em; font-weight: 650; }
-#StreamJellyPage .si-stat span { font-size: .78em; color: var(--si-muted); }
-#StreamJellyPage .si-stat.hw b { color: var(--si-hw); }
-#StreamJellyPage .si-stat.warn b { color: var(--si-burn); }
+/* ---------- body: streams panel + live panel ---------- */
+#StreamJellyPage .si-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1em; padding: 0 1.6em 1.4em; }
+#StreamJellyPage .si-panel { border: 1px solid var(--si-line); border-radius: 12px; padding: 1em 1.2em 1.1em; background: rgba(255,255,255,.02); min-width: 0; }
+#StreamJellyPage .si-panel > h3 { font-size: .95em; font-weight: 650; margin: 0 0 .5em; }
+#StreamJellyPage .si-panel .si-preview { width: 100%; max-width: 360px; margin: .2em 0 1em; text-align: left; }
+#StreamJellyPage .si-panel .si-preview-none { max-width: none; text-align: left; margin-bottom: .8em; }
+#StreamJellyPage .si-live { display: grid; grid-template-columns: 1fr auto; gap: 0; margin: 0; font-size: .9em; max-width: 560px; }
+#StreamJellyPage .si-live dt, #StreamJellyPage .si-live dd { padding: .5em 0; border-top: 1px solid var(--si-faint); }
+#StreamJellyPage .si-live dt:first-of-type, #StreamJellyPage .si-live dt:first-of-type + dd { border-top: 0; }
+#StreamJellyPage .si-live dd { text-align: right; font-weight: 650; }
+#StreamJellyPage .si-live dd.hw { color: var(--si-hw); }
+#StreamJellyPage .si-live dd.warn { color: var(--si-burn); }
 
-/* ---------- details ---------- */
-#StreamJellyPage details.si-more { border-top: 1px solid var(--si-line); }
-#StreamJellyPage details.si-more > summary { list-style: none; cursor: pointer; padding: .85em 1.6em; color: var(--si-muted); font-size: .88em; user-select: none; }
-#StreamJellyPage details.si-more > summary::-webkit-details-marker { display: none; }
-#StreamJellyPage details.si-more > summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
-#StreamJellyPage details.si-more[open] > summary::before { transform: rotate(90deg); }
-#StreamJellyPage details.si-more > summary:hover { color: var(--si-text); }
-#StreamJellyPage .si-more-body { padding: 0 1.6em 1.6em; display: grid; gap: 1.6em; }
-#StreamJellyPage .si-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.6em 2.4em; }
-#StreamJellyPage .si-cols h3 { font-size: .95em; font-weight: 650; margin: 0 0 .6em; }
+/* ---------- details as tabs ---------- */
+#StreamJellyPage .si-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: .35em; padding: .9em 1.6em; border-top: 1px solid var(--si-line); }
+#StreamJellyPage .si-tabs-label { color: var(--si-muted); font-size: .85em; align-self: center; margin-right: .5em; }
+#StreamJellyPage .si-tab { background: none; border: 1px solid transparent; color: var(--si-muted); border-radius: 999px; padding: .35em .9em; font: inherit; font-size: .85em; cursor: pointer; }
+#StreamJellyPage .si-tab:hover { color: var(--si-text); background: rgba(255,255,255,.05); }
+#StreamJellyPage .si-tab[aria-selected="true"] { color: var(--si-text); background: rgba(255,255,255,.09); border-color: var(--si-line); }
+#StreamJellyPage .si-tabpanel { padding: 0 1.6em 1.5em; }
 #StreamJellyPage dl { display: grid; grid-template-columns: max-content 1fr; gap: .3em 1.1em; margin: 0; font-size: .88em; }
 #StreamJellyPage dt { color: var(--si-muted); }
 #StreamJellyPage dd { margin: 0; word-break: break-word; }
@@ -151,6 +150,19 @@
 #StreamJellyPage tr.on td { background: rgba(0,164,220,.08); }
 #StreamJellyPage tr.on td:first-child { box-shadow: inset 3px 0 var(--si-brand); }
 #StreamJellyPage tr.off td { color: var(--si-muted); }
+#StreamJellyPage .si-sgroups { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.2em; }
+#StreamJellyPage .si-sgroup h4 { margin: 0 0 .5em; font-size: .9em; font-weight: 650; }
+#StreamJellyPage .si-sgroup h4 span { color: var(--si-muted); font-weight: 400; }
+#StreamJellyPage .si-srow { display: grid; grid-template-columns: 2.2em 1fr; gap: .2em .6em; padding: .6em .7em; border-radius: 8px; margin-bottom: .35em; background: rgba(255,255,255,.025); border: 1px solid transparent; }
+#StreamJellyPage .si-srow.on { background: rgba(0,164,220,.09); border-color: rgba(0,164,220,.35); }
+#StreamJellyPage .si-srow.off { opacity: .62; }
+#StreamJellyPage .si-sidx { color: var(--si-muted); font-size: .85em; padding-top: .1em; }
+#StreamJellyPage .si-sline { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3em .6em; }
+#StreamJellyPage .si-sname { font-weight: 650; }
+#StreamJellyPage .si-slang { font-size: .78em; padding: .1em .5em; border-radius: 4px; background: rgba(255,255,255,.08); text-transform: lowercase; }
+#StreamJellyPage .si-stitle { color: var(--si-muted); font-size: .88em; }
+#StreamJellyPage .si-inuse { margin-left: auto; font-size: .72em; font-weight: 700; color: var(--si-brand); border: 1.5px solid currentColor; border-radius: 999px; padding: .1em .55em; }
+#StreamJellyPage .si-sfeat { grid-column: 2; font-size: .8em; color: #b8bec6; }
 #StreamJellyPage .si-cmd { position: relative; }
 #StreamJellyPage .si-cmd pre { margin: 0; white-space: pre-wrap; word-break: break-all; font-size: .76em; line-height: 1.55; background: rgba(0,0,0,.35); padding: 2.6em 1.1em 1em; border-radius: 8px; max-height: 280px; overflow: auto; color: #c9d1d9; }
 #StreamJellyPage .si-cmd pre .opt { color: #7fc8ff; }
@@ -159,7 +171,7 @@
 #StreamJellyPage .si-empty { text-align: center; padding: 5em 1em; color: var(--si-muted); }
 #StreamJellyPage .si-empty b { display: block; color: var(--si-text); font-size: 1.2em; margin-bottom: .4em; }
 #StreamJellyPage .si-error { padding: 1em 1.2em; border-radius: 10px; background: rgba(255,111,97,.12); color: #ffb3aa; margin-bottom: 1.5em; }
-#StreamJellyPage button:focus-visible, #StreamJellyPage summary:focus-visible, #StreamJellyPage input:focus-visible { outline: 2px solid var(--si-brand); outline-offset: 2px; }
+#StreamJellyPage button:focus-visible, #StreamJellyPage summary:focus-visible, #StreamJellyPage .si-card:focus-visible, #StreamJellyPage input:focus-visible { outline: 2px solid var(--si-brand); outline-offset: 2px; }
 
 @media (max-width: 760px) {
     #StreamJellyPage .si { padding: 1em .8em 3em; }
@@ -168,11 +180,12 @@
     #StreamJellyPage .si-poster { width: 64px; }
     #StreamJellyPage .si-preview { width: 100%; max-width: 320px; }
     #StreamJellyPage .si-mode { text-align: left; width: 100%; }
-    #StreamJellyPage .si-path, #StreamJellyPage .si-time, #StreamJellyPage .si-reasons { padding-left: 1.2em; padding-right: 1.2em; }
-    #StreamJellyPage .si-path-head { display: none; }
-    #StreamJellyPage .si-lane { grid-template-columns: 1fr; gap: .4em; }
-    #StreamJellyPage .si-end.out { text-align: left; }
-    #StreamJellyPage .si-wire { margin: 0; justify-content: flex-start; }
+    #StreamJellyPage .si-time, #StreamJellyPage .si-tabs, #StreamJellyPage .si-tabpanel { padding-left: 1.2em; padding-right: 1.2em; }
+    #StreamJellyPage .si-body { padding: 0 1.2em 1.2em; }
+    #StreamJellyPage .si-lane { grid-template-columns: 1fr; }
+    #StreamJellyPage .si-ls { grid-column: 1; }
+    #StreamJellyPage .si-ls span { display: block; min-width: 0; }
+    #StreamJellyPage .si-actions { justify-content: flex-start; }
 }
 </style>
 
@@ -211,6 +224,7 @@
     var rates = {};
     var openState = {};
     var expanded = {};
+    var tabState = {};
     var justOpened = null;
     var lastList = [];
 
@@ -237,7 +251,7 @@
             st_now: 'Now to the client', st_container: 'Container', st_target: 'Target bitrate', st_filebr: 'File bitrate',
             st_speed: 'Encoding speed', st_ahead: 'Transcoded ahead', st_downloaded: 'Downloaded by the client',
             st_hw: 'Hardware acceleration', hw_none: 'none (CPU)',
-            details: 'Details: all streams, file and ffmpeg', h_source: 'Source file', h_output: 'Output',
+            details: 'Details', streams_h: 'Streams', live_h: 'Live', tab_streams: 'All streams', in_use: 'in use', tab_cmd: 'ffmpeg command', h_source: 'Source file', h_output: 'Output',
             size: 'Size', bitrate: 'Bitrate', type: 'Type', protocol: 'Protocol', playable: 'Playable',
             pl_direct: 'directly', pl_remux: 'with remux', pl_transcode: 'transcoded', path: 'Path',
             video: 'Video', resolution: 'Resolution', framerate: 'Frame rate', audio: 'Audio', channels: 'Channels',
@@ -255,7 +269,7 @@
             mode: { DirectPlay: 'Direct play', DirectStream: 'Remux', Transcode: 'Transcode', Unknown: 'Unknown' },
             modeNote: { DirectPlay: 'The client gets the original file', DirectStream: 'New container, streams unchanged', Transcode: 'The server re-encodes' },
             node: { Direct: 'original', Copy: 'copy', Transcode: 'transcode', BurnIn: 'burn-in', Separate: 'separate', None: '–' },
-            kind: { Video: 'Video', Audio: 'Audio', Subtitle: 'Subtitle' },
+            kind: { Video: 'Video', Audio: 'Audio', Subtitle: 'Subtitle', EmbeddedImage: 'Image', Data: 'Data', Lyric: 'Lyrics', Attachment: 'Attachment' },
             reason: {
                 ContainerNotSupported: 'container', VideoCodecNotSupported: 'video codec', AudioCodecNotSupported: 'audio codec',
                 SubtitleCodecNotSupported: 'subtitle format', AudioIsExternal: 'external audio track', SecondaryAudioNotSupported: 'secondary audio track',
@@ -284,7 +298,7 @@
             st_now: 'Most a kliens felé', st_container: 'Konténer', st_target: 'Cél bitráta', st_filebr: 'Fájl bitrátája',
             st_speed: 'Kódolási sebesség', st_ahead: 'Előre átkódolva', st_downloaded: 'Kliens letöltött',
             st_hw: 'Hardveres gyorsítás', hw_none: 'nincs (CPU)',
-            details: 'Részletek: összes stream, fájl és ffmpeg', h_source: 'Forrásfájl', h_output: 'Kimenet',
+            details: 'Részletek', streams_h: 'Stream-ek', live_h: 'Élő adatok', tab_streams: 'Összes stream', in_use: 'használatban', tab_cmd: 'ffmpeg parancs', h_source: 'Forrásfájl', h_output: 'Kimenet',
             size: 'Méret', bitrate: 'Bitráta', type: 'Típus', protocol: 'Protokoll', playable: 'Lejátszható',
             pl_direct: 'közvetlenül', pl_remux: 'remuxszal', pl_transcode: 'átkódolva', path: 'Útvonal',
             video: 'Videó', resolution: 'Felbontás', framerate: 'Képkocka', audio: 'Hang', channels: 'Csatornák',
@@ -302,7 +316,7 @@
             mode: { DirectPlay: 'Közvetlen lejátszás', DirectStream: 'Remux', Transcode: 'Átkódolás', Unknown: 'Ismeretlen' },
             modeNote: { DirectPlay: 'A kliens az eredeti fájlt kapja', DirectStream: 'Új konténer, a stream-ek változatlanok', Transcode: 'A szerver újrakódol' },
             node: { Direct: 'eredeti', Copy: 'másolás', Transcode: 'átkódolás', BurnIn: 'beégetés', Separate: 'külön', None: '–' },
-            kind: { Video: 'Videó', Audio: 'Hang', Subtitle: 'Felirat' },
+            kind: { Video: 'Videó', Audio: 'Hang', Subtitle: 'Felirat', EmbeddedImage: 'Kép', Data: 'Adat', Lyric: 'Dalszöveg', Attachment: 'Melléklet' },
             reason: {
                 ContainerNotSupported: 'konténer', VideoCodecNotSupported: 'videó kodek', AudioCodecNotSupported: 'hang kodek',
                 SubtitleCodecNotSupported: 'felirat formátum', AudioIsExternal: 'külső hangsáv', SecondaryAudioNotSupported: 'másodlagos hangsáv',
@@ -430,19 +444,22 @@
         if (d.decision === 'BurnIn') return { v: t('burned'), s: t('burned_note') };
         return { v: t('separate'), s: t('separate_note') };
     }
+    /** One row per stream: source → what the server does → what the client receives. */
     function lanes(s) {
         var hints = s.jobs && s.jobs[0] ? s.jobs[0].hints : null;
-        var h = '<div class="si-path"><div class="si-path-head"><div>' + esc(t('source')) + '</div><div>' + esc(t('server')) + '</div><div>' + esc(t('client_gets')) + '</div></div>';
+        var h = '<div class="si-path">';
         (s.decisions || []).forEach(function (d) {
             var st = active(s.source, d.type);
             var a = sourceEnd(d.type, st), b = outEnd(d.type, d, s, st, hints);
             h += '<div class="si-lane d-' + esc(d.decision) + '">'
-                + '<div class="si-end src"><div class="k">' + esc(kindName[d.type] || d.type) + (d.sourceIndex !== undefined && d.sourceIndex !== null ? ' #' + d.sourceIndex : '') + '</div>'
-                + '<div class="v">' + esc(a.v) + '</div><div class="s">' + esc(a.s) + '</div></div>'
-                + '<div class="si-wire"><span class="si-node">' + esc(nodeName[d.decision] || d.decision) + '</span></div>'
-                + '<div class="si-end out"><div class="k">' + esc(kindName[d.type] || d.type) + '</div>'
-                + '<div class="v">' + esc(b.v) + '</div><div class="s">' + esc(b.s) + '</div></div>'
-                + '</div>';
+                + '<div class="si-lk">' + esc(kindName[d.type] || d.type)
+                + (d.sourceIndex !== undefined && d.sourceIndex !== null ? '<small>#' + d.sourceIndex + '</small>' : '') + '</div>'
+                + '<div class="si-lc">'
+                + '<div class="si-lv"><span>' + esc(a.v) + '</span><span class="si-flow" aria-hidden="true"></span>'
+                + '<span class="si-out">' + esc(b.v) + '</span><span class="si-node">' + esc(nodeName[d.decision] || d.decision) + '</span></div>'
+                + (a.s ? '<div class="si-ls"><span>' + esc(t('source')) + '</span>' + esc(a.s) + '</div>' : '')
+                + (b.s ? '<div class="si-ls"><span>' + esc(t('client_gets')) + '</span>' + esc(b.s) + '</div>' : '')
+                + '</div></div>';
         });
         return h + '</div>';
     }
@@ -454,25 +471,25 @@
         var job = s.jobs && s.jobs[0];
         var pct = s.runTimeTicks ? Math.min(100, 100 * (s.positionTicks || 0) / s.runTimeTicks) : 0;
         var buf = job && job.transcodingPositionTicks && s.runTimeTicks ? Math.min(100, 100 * job.transcodingPositionTicks / s.runTimeTicks) : 0;
-        var vSrc = active(s.source, 'Video');
-        var title = s.itemName || '';
         var sub = s.seriesName ? s.seriesName + '  ·  ' + episode(s) : (s.productionYear || '');
 
         var h = '<article class="si-session' + (s.isPaused ? '' : ' is-live') + (justOpened === s.sessionId ? ' just-opened' : '') + '">';
+
+        // header: cover, title, who; mode and collapse on the right
         h += '<div class="si-hero">';
         if (s.backdropItemId) h += '<div class="si-hero-bg" style="background-image:url(\'' + ApiClient.getUrl('Items/' + s.backdropItemId + '/Images/Backdrop', { maxWidth: 1280, quality: 70 }) + '\')"></div>';
         if (s.posterItemId) h += '<div class="si-poster" style="background-image:url(\'' + ApiClient.getUrl('Items/' + s.posterItemId + '/Images/Primary', { maxHeight: 300, quality: 85 }) + '\')"></div>';
         h += '<div class="si-heading">';
         if (sub) h += '<div class="si-series">' + esc(sub) + '</div>';
-        h += '<h2 class="si-name">' + esc(title) + '</h2>';
+        h += '<h2 class="si-name">' + esc(s.itemName || '') + '</h2>';
         h += '<div class="si-who">'
             + (s.userName ? '<span class="si-chip">' + esc(s.userName) + '</span>' : '')
             + '<span class="si-chip">' + esc(join([s.client, s.applicationVersion], ' ')) + '</span>'
             + (s.deviceName ? '<span class="si-chip">' + esc(s.deviceName) + '</span>' : '')
             + (s.remoteEndPoint ? '<span class="si-chip">' + esc(s.remoteEndPoint) + '</span>' : '')
             + '</div></div>';
-        h += preview(s);
-        h += '<div class="si-mode"><button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">' + esc(t('collapse')) + '</button><br><div class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</div>'
+        h += '<div class="si-mode"><div class="si-actions"><span class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</span>'
+            + '<button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">' + esc(t('collapse')) + '</button></div>'
             + '<div class="si-mode-note">' + esc(modeNote[mode] || '') + '</div></div>';
         h += '</div>';
 
@@ -481,57 +498,77 @@
             + '<div class="si-track" title="' + esc(t('track') + (buf ? t('track_buf') : '')) + '"><i style="width:' + buf.toFixed(1) + '%"></i><b style="width:' + pct.toFixed(1) + '%"></b></div>'
             + '<span>' + clock(s.runTimeTicks) + '</span></div>';
 
-        h += lanes(s);
-        h += report(s);
-
+        // body: what goes where (left), live numbers and preview (right)
+        h += '<div class="si-body">';
+        h += '<section class="si-panel"><h3>' + esc(t('streams_h')) + '</h3>' + lanes(s) + report(s);
         if (o.transcodeReasons && o.transcodeReasons.length) {
             h += '<div class="si-reasons"><span>' + esc(t('not_supported')) + '</span>'
                 + o.transcodeReasons.map(function (r) { return '<span class="si-reason">' + esc(reasonName[r] || r) + '</span>'; }).join('') + '</div>';
         }
+        h += '</section>';
+        h += '<section class="si-panel"><h3>' + esc(t('live_h')) + '</h3>' + preview(s) + liveList(s, job, mode) + '</section>';
+        h += '</div>';
 
-        // live numbers
-        var stats = [];
+        // details as tabs; nothing open by default
+        var tabs = detailTabs(s, job);
+        var current = tabState[s.sessionId];
+        if (current && !tabs.some(function (x) { return x.id === current; })) current = null;
+        h += '<div class="si-tabs" role="tablist" aria-label="' + esc(t('details')) + '"><span class="si-tabs-label">' + esc(t('details')) + '</span>' + tabs.map(function (x) {
+            return '<button type="button" class="si-tab" role="tab" data-tab="' + esc(x.id) + '" data-sid="' + esc(s.sessionId) + '" aria-selected="' + (x.id === current) + '">' + esc(x.label) + '</button>';
+        }).join('') + '</div>';
+        if (current) {
+            h += '<div class="si-tabpanel" role="tabpanel">' + tabs.filter(function (x) { return x.id === current; })[0].html + '</div>';
+        }
+        return h + '</article>';
+    }
+
+    /** The live numbers as label / value rows. */
+    function liveList(s, job, mode) {
+        var o = s.output || {};
+        var vSrc = active(s.source, 'Video');
+        var rows = [];
         var rate = job ? rates[job.id || s.sessionId] : null;
-        if (rate) stats.push([t('st_now'), mbps(rate)]);
+        if (rate) rows.push([t('st_now'), mbps(rate)]);
         var cont = o.container || (s.source && s.source.container);
-        if (cont) stats.push([t('st_container'), String(cont).split(',')[0].toUpperCase()]);
-        stats.push([job ? t('st_target') : t('st_filebr'), mbps(o.bitrate || (s.source && s.source.bitrate)) || '–']);
+        if (cont) rows.push([t('st_container'), String(cont).split(',')[0].toUpperCase()]);
+        rows.push([job ? t('st_target') : t('st_filebr'), mbps(o.bitrate || (s.source && s.source.bitrate)) || '–']);
         if (job) {
             if (job.framerate) {
                 var speed = vSrc && vSrc.frameRate ? job.framerate / vSrc.frameRate : null;
-                stats.push([t('st_speed'), speed ? speed.toFixed(1).replace('.', DEC) + '×' : fps(job.framerate), speed && speed < 1.05 && !s.isPaused ? 'warn' : '']);
+                rows.push([t('st_speed'), speed ? speed.toFixed(1).replace('.', DEC) + '×' : fps(job.framerate), speed && speed < 1.05 && !s.isPaused ? 'warn' : '']);
             }
             if (job.transcodingPositionTicks && s.positionTicks !== undefined) {
                 var ahead = (job.transcodingPositionTicks - (s.positionTicks || 0)) / 1e7;
-                stats.push([t('st_ahead'), ahead >= 90 ? Math.round(ahead / 60) + ' ' + t('min') : Math.max(0, Math.round(ahead)) + ' ' + t('sec'), ahead < 10 && !s.isPaused ? 'warn' : '']);
+                rows.push([t('st_ahead'), ahead >= 90 ? Math.round(ahead / 60) + ' ' + t('min') : Math.max(0, Math.round(ahead)) + ' ' + t('sec'), ahead < 10 && !s.isPaused ? 'warn' : '']);
             }
-            stats.push([t('st_downloaded'), bytes(job.bytesDownloaded)]);
+            rows.push([t('st_downloaded'), bytes(job.bytesDownloaded)]);
         }
-        if (o.hardwareAcceleration && o.hardwareAcceleration.toLowerCase() !== 'none') stats.push([t('st_hw'), o.hardwareAcceleration.toUpperCase(), 'hw']);
-        else if (job && mode === 'Transcode') stats.push([t('st_hw'), t('hw_none')]);
-        h += '<div class="si-stats">' + stats.map(function (x) {
-            return '<div class="si-stat' + (x[2] ? ' ' + x[2] : '') + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[0]) + '</span></div>';
-        }).join('') + '</div>';
+        if (o.hardwareAcceleration && o.hardwareAcceleration.toLowerCase() !== 'none') rows.push([t('st_hw'), o.hardwareAcceleration.toUpperCase(), 'hw']);
+        else if (job && mode === 'Transcode') rows.push([t('st_hw'), t('hw_none')]);
+        return '<dl class="si-live">' + rows.map(function (x) {
+            return '<dt>' + esc(x[0]) + '</dt><dd' + (x[2] ? ' class="' + x[2] + '"' : '') + '>' + esc(x[1]) + '</dd>';
+        }).join('') + '</dl>';
+    }
 
-        // details
-        var did = 'more-' + s.sessionId;
-        h += '<details class="si-more" data-did="' + esc(did) + '"' + (openState[did] ? ' open' : '') + '><summary>' + esc(t('details')) + '</summary><div class="si-more-body">';
-        h += '<div class="si-cols">';
+    /** The detail tabs of a session: source file, output, ffmpeg, all streams, ffmpeg command. */
+    function detailTabs(s, job) {
+        var o = s.output || {};
         var src = s.source;
+        var tabs = [];
         if (src) {
-            h += '<div><h3>' + esc(t('h_source')) + '</h3><dl>'
+            tabs.push({ id: 'source', label: t('h_source'), html: '<dl>'
                 + dl(t('st_container'), src.container) + dl(t('size'), bytes(src.size)) + dl(t('bitrate'), mbps(src.bitrate))
                 + dl(t('type'), src.videoType) + dl(t('protocol'), src.protocol)
                 + dl(t('playable'), join([src.supportsDirectPlay ? t('pl_direct') : '', src.supportsDirectStream ? t('pl_remux') : '', src.supportsTranscoding ? t('pl_transcode') : ''], ', '))
-                + dl(t('path'), src.path) + '</dl></div>';
+                + dl(t('path'), src.path) + '</dl>' });
         }
-        h += '<div><h3>' + esc(t('h_output')) + '</h3><dl>'
+        tabs.push({ id: 'output', label: t('h_output'), html: '<dl>'
             + dl(t('st_container'), o.container) + dl(t('video'), codec(o.videoCodec)) + dl(t('resolution'), o.width && o.height ? o.width + ' × ' + o.height : '')
             + dl(t('framerate'), fps(o.framerate)) + dl(t('audio'), codec(o.audioCodec)) + dl(t('channels'), channels(o.audioChannels))
-            + dl(t('bitrate'), mbps(o.bitrate)) + '</dl></div>';
+            + dl(t('bitrate'), mbps(o.bitrate)) + '</dl>' });
         if (job) {
             var hi = job.hints || {};
-            h += '<div><h3>ffmpeg</h3><dl>'
+            tabs.push({ id: 'ffmpeg', label: 'ffmpeg', html: '<dl>'
                 + dl(t('process'), join([job.type === 'Hls' ? 'HLS' : job.type, job.processId ? 'PID ' + job.processId : ''], ', '))
                 + dl(t('venc'), join([hi.videoEncoder, hi.preset ? 'preset ' + hi.preset : '', hi.crf ? 'CRF ' + hi.crf : ''], ', '))
                 + dl(t('vbr'), join([hi.videoBitrate ? mbps(+hi.videoBitrate) : '', hi.maxRate ? 'max ' + mbps(+hi.maxRate) : ''], ', '))
@@ -539,26 +576,16 @@
                 + dl(t('segments'), join([hi.segmentFormat, hi.segmentLength ? hi.segmentLength + ' ' + t('sec') : ''], ', '))
                 + dl(t('transcoded_data'), bytes(job.bytesTranscoded))
                 + dl(t('throttling'), job.throttlingEnabled ? t('enabled') : '')
-                + dl(t('outfile'), job.outputPath) + '</dl></div>';
+                + dl(t('outfile'), job.outputPath) + '</dl>' });
         }
-        h += '</div>';
-
         if (src && src.streams && src.streams.length) {
-            h += '<div><div class="si-table-wrap"><table><thead><tr><th>#</th><th>' + esc(t('th_type')) + '</th><th>' + esc(t('th_format')) + '</th><th>' + esc(t('th_lang')) + '</th><th>' + esc(t('th_title')) + '</th><th>' + esc(t('th_feat')) + '</th></tr></thead><tbody>';
-            src.streams.forEach(function (st) {
-                h += '<tr class="' + (st.isActive ? 'on' : 'off') + '"><td>' + st.index + '</td><td>' + esc(kindName[st.type] || st.type) + '</td>'
-                    + '<td>' + esc(join([codec(st.codec), st.profile], ' ')) + '</td><td>' + esc(st.language) + '</td><td>' + esc(st.title || '') + '</td>'
-                    + '<td>' + esc(features(st)) + '</td></tr>';
-            });
-            h += '</tbody></table></div></div>';
+            tabs.push({ id: 'streams', label: t('tab_streams') + ' (' + src.streams.length + ')', html: streamGroups(src.streams) });
         }
-
         if (job && job.ffmpegCommand) {
-            h += '<div class="si-cmd"><button type="button" class="si-copy" data-cmd="' + esc(job.ffmpegCommand) + '">' + esc(t('copy')) + '</button><pre>'
-                + esc(job.ffmpegCommand).replace(/(^|\s)(-[a-z_:0-9]+)/gi, '$1<span class="opt">$2</span>') + '</pre></div>';
+            tabs.push({ id: 'cmd', label: t('tab_cmd'), html: '<div class="si-cmd"><button type="button" class="si-copy" data-cmd="' + esc(job.ffmpegCommand) + '">' + esc(t('copy')) + '</button><pre>'
+                + esc(job.ffmpegCommand).replace(/(^|\s)(-[a-z_:0-9]+)/gi, '$1<span class="opt">$2</span>') + '</pre></div>' });
         }
-        h += '</div></details></article>';
-        return h;
+        return tabs;
     }
     /** Approximate picture of the playback position: one thumbnail cropped out of a trickplay tile sheet. */
     function preview(s) {
@@ -586,12 +613,38 @@
         return '<div class="si-report' + (ago > 30 && !s.isPaused ? ' stale' : '') + '">' + esc(txt) + '</div>';
     }
     function dl(k, v) { return v ? '<dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd>' : ''; }
-    function features(st) {
+    /** The properties of a stream, as short items. */
+    function featureList(st) {
         var p = [];
         if (st.type === 'Video') p = [st.width && st.height ? st.width + '×' + st.height + (st.isInterlaced ? 'i' : 'p') : '', fps(st.frameRate), st.bitDepth ? st.bitDepth + ' bit' : '', range(st.videoRangeType), st.dvProfile ? 'DV ' + st.dvProfile : '', st.pixelFormat, mbps(st.bitRate)];
-        else if (st.type === 'Audio') p = [channels(st.channels, st.channelLayout), st.sampleRate ? (st.sampleRate / 1000).toString().replace('.', DEC) + ' kHz' : '', mbps(st.bitRate)];
+        else if (st.type === 'Audio') p = [st.sampleRate ? (st.sampleRate / 1000).toString().replace('.', DEC) + ' kHz' : '', st.bitDepth ? st.bitDepth + ' bit' : '', mbps(st.bitRate)];
         p = p.concat([st.isDefault ? t('default_') : '', st.isForced ? t('forced') : '', st.isExternal ? t('external') : '', st.isHearingImpaired ? 'SDH' : '', st.path || '']);
-        return join(p, ', ');
+        return p.filter(function (x) { return x; });
+    }
+    /** Every stream of the file, grouped by type; the ones in use first and marked. */
+    function streamGroups(streams) {
+        var order = ['Video', 'Audio', 'Subtitle'];
+        var types = [];
+        streams.forEach(function (st) { if (types.indexOf(st.type) < 0) types.push(st.type); });
+        types.sort(function (a, b) { return (order.indexOf(a) < 0 ? 9 : order.indexOf(a)) - (order.indexOf(b) < 0 ? 9 : order.indexOf(b)); });
+        return '<div class="si-sgroups">' + types.map(function (type) {
+            var list = streams.filter(function (st) { return st.type === type; })
+                .sort(function (a, b) { return (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0) || a.index - b.index; });
+            return '<div class="si-sgroup"><h4>' + esc(kindName[type] || type) + ' <span>' + list.length + '</span></h4>' + list.map(function (st) {
+                var name = type === 'Video' ? join([res(st.width, st.height), codec(st.codec), st.profile], ' ')
+                    : type === 'Audio' ? join([codec(st.codec), channels(st.channels, st.channelLayout)], ' ')
+                    : codec(st.codec);
+                var feats = featureList(st);
+                if (type === 'Audio' && st.profile && st.profile !== st.codec) feats.unshift(st.profile);
+                return '<div class="si-srow ' + (st.isActive ? 'on' : 'off') + '"><div class="si-sidx">#' + st.index + '</div>'
+                    + '<div class="si-sline"><span class="si-sname">' + esc(name || st.codec || '') + '</span>'
+                    + (st.language ? '<span class="si-slang">' + esc(st.language) + '</span>' : '')
+                    + (st.title ? '<span class="si-stitle">' + esc(st.title) + '</span>' : '')
+                    + (st.isActive ? '<span class="si-inuse">' + esc(t('in_use')) + '</span>' : '') + '</div>'
+                    + (feats.length ? '<div class="si-sfeat">' + esc(feats.join('  ·  ')) + '</div>' : '')
+                    + '</div>';
+            }).join('') + '</div>';
+        }).join('') + '</div>';
     }
 
     /* ---------- page ---------- */
@@ -684,6 +737,15 @@
     page.querySelector('#siSessions').addEventListener('click', function (e) {
         var tg = e.target.closest('[data-toggle]');
         if (tg) { toggle(tg.getAttribute('data-toggle')); return; }
+        var tab = e.target.closest('.si-tab');
+        if (tab) {
+            var sid = tab.getAttribute('data-sid'), id = tab.getAttribute('data-tab');
+            tabState[sid] = tabState[sid] === id ? null : id;
+            render();
+            var again = page.querySelector('.si-tab[data-sid="' + (window.CSS && CSS.escape ? CSS.escape(sid) : sid) + '"][data-tab="' + id + '"]');
+            if (again) again.focus();
+            return;
+        }
         var b = e.target.closest('.si-copy');
         if (!b) return;
         navigator.clipboard.writeText(b.getAttribute('data-cmd')).then(function () {
