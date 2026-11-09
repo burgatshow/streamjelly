@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/burgatshow/streamjelly/main/assets/thumb.png",
     "versions": [
       {
+        "version": "1.7.1.0",
+        "changelog": "#### Changed\n- Tidier detailed view of a playback:\n  - header: playback mode and *Collapse* side by side;\n  - the live numbers and the approximate preview moved into the header, in a compact box next to the title;\n  - sections one under the other instead of columns: *Streams*, then the details;\n  - *Streams*: one row per stream, left-aligned: source → what the client receives, the server's decision, then the source and client details on their own lines; the client report and the transcode reasons below;\n  - details as tabs at the bottom (source file, output, ffmpeg, all streams, ffmpeg command), all closed by default.\n- *All streams*: the streams of the file grouped by type (video, audio, subtitle), one under the other, instead of one table; the ones in use come first, framed and marked *in use*, the others dimmed; language and title next to the format, properties on a second line.",
+        "targetAbi": "12.4.0.0",
+        "sourceUrl": "https://github.com/burgatshow/streamjelly/releases/download/v1.7.1/streamjelly_1.7.1.0.zip",
+        "checksum": "d55ee799dbfead748574f822521ae7d5",
+        "timestamp": "2026-11-09T23:57:00.0000000Z"
+      },
+      {
         "version": "1.7.0.0",
         "changelog": "#### Added\n- Approximate preview of the playback position in the expanded view: the trickplay thumbnail (the picture Jellyfin shows when seeking) closest to the position the client last reported, with its time. Off by default; turn it on with *Show approximate preview* in the settings.\n- Needs trickplay images for the video (library setting *Enable trickplay image extraction*); without them the view says there is no preview.\n- API: `showPreview` in the response, `preview` per session (trickplay resolution, tile sheet index, column and row).\n\n#### Fixed\n- The error text of a session that could not be inspected was partly Hungarian in the API.",
         "targetAbi": "12.4.0.0",
