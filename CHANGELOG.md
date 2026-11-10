@@ -8,6 +8,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.7.2] – 2026-11-10
+#### Fixed
+- Hotfix release: the 1.7.1 release package on GitHub was broken. 1.7.2 contains the same changes as 1.7.1; the 1.7.1 entry was removed from the plugin repository (`manifest.json`).
+
 ### [1.7.1] – 2026-11-10
 #### Changed
 - Tidier detailed view of a playback:
@@ -90,6 +94,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.7.2] – 2026-11-10
+#### Javítva
+- Hotfix kiadás: az 1.7.1 kiadási csomagja a GitHubon hibás volt. Az 1.7.2 ugyanazokat a változásokat tartalmazza, mint az 1.7.1; az 1.7.1 bejegyzés kikerült a plugin-adattárból (`manifest.json`).
 
 ### [1.7.1] – 2026-11-10
 #### Változott
