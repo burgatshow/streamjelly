@@ -8,6 +8,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.9.0] – 2026-11-21
+#### Changed
+- *Streams* section reworked:
+  - a one-sentence summary on top says what happens, e.g. *Every stream goes through unchanged, only the container changes: MKV → MP4.* or *The server re-encodes the video, audio and subtitle.*, coloured by the playback mode;
+  - the live numbers of the ffmpeg job (bandwidth to the client, encoding speed, transcoded ahead, downloaded, hardware acceleration) and the transcode reasons sit in that summary;
+  - one tile per stream with a type icon (video, audio, subtitle), the decision as a coloured tag and a coloured edge, the format in large type and the properties as small tags;
+  - nothing is repeated: a stream that goes through unchanged is shown once, not as *X → X*; the client side is only listed when it differs.
+- Header of the expanded view: only the approximate preview picture (when there is one, its time in the tooltip); the live numbers, the container and bitrate (already in the stream tiles) and the mode description under the badge are gone from the header.
+
 ### [1.8.1] – 2026-11-21
 #### Fixed
 - The 1.8.0 package was built from an outdated dashboard page, so the new look described under 1.8.0 was missing (only the live numbers in the header made it in). 1.8.1 contains the complete 1.8.0 changes.
@@ -106,6 +115,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.9.0] – 2026-11-21
+#### Változott
+- Átdolgozott *Stream-ek* szekció:
+  - felül egy mondatos összefoglaló mondja meg, mi történik, pl. *Minden stream változatlanul megy, csak a konténer változik: MKV → MP4.* vagy *A szerver újrakódolja: videó, hang és felirat.*, a lejátszási mód színével;
+  - az összefoglalóban vannak az ffmpeg folyamat élő számai (sávszélesség a kliens felé, kódolási sebesség, előre átkódolt rész, letöltött adat, hardveres gyorsítás) és az átkódolás okai;
+  - stream-enként egy csempe típusikonnal (videó, hang, felirat), a döntés színes címkéje és színes széle, a formátum nagy betűvel, a jellemzők kis címkékként;
+  - nincs ismétlés: a változatlanul átmenő stream egyszer szerepel, nem *X → X* formában; a kliens oldala csak akkor látszik, ha eltér.
+- A kibontott nézet fejlécében csak a megközelítő előnézet képe van (ha van, az időpontja buboréksúgóban); az élő számok, a konténer és a bitráta (ezek a stream-csempéken már szerepelnek), valamint a jelvény alatti módleírás kikerült a fejlécből.
 
 ### [1.8.1] – 2026-11-21
 #### Javítva
