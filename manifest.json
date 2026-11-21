@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/burgatshow/streamjelly/main/assets/thumb.png",
     "versions": [
       {
+        "version": "1.9.0.0",
+        "changelog": "#### Changed\n- *Streams* section reworked:\n  - a one-sentence summary on top says what happens, e.g. *Every stream goes through unchanged, only the container changes: MKV → MP4.* or *The server re-encodes the video, audio and subtitle.*, coloured by the playback mode;\n  - the live numbers of the ffmpeg job (bandwidth to the client, encoding speed, transcoded ahead, downloaded, hardware acceleration) and the transcode reasons sit in that summary;\n  - one tile per stream with a type icon (video, audio, subtitle), the decision as a coloured tag and a coloured edge, the format in large type and the properties as small tags;\n  - nothing is repeated: a stream that goes through unchanged is shown once, not as *X → X*; the client side is only listed when it differs.\n- Header of the expanded view: only the approximate preview picture (when there is one, its time in the tooltip); the live numbers, the container and bitrate (already in the stream tiles) and the mode description under the badge are gone from the header.",
+        "targetAbi": "12.4.0.0",
+        "sourceUrl": "https://github.com/burgatshow/streamjelly/releases/download/v1.9.0/streamjelly_1.9.0.0.zip",
+        "checksum": "ded1f3da46993398b5a27dff8f17689a",
+        "timestamp": "2026-11-21T21:26:51.0000000Z"
+      },
+      {
         "version": "1.8.1.0",
         "changelog": "#### Fixed\n- The 1.8.0 package was built from an outdated dashboard page, so the new look described under 1.8.0 was missing (only the live numbers in the header made it in). 1.8.1 contains the complete 1.8.0 changes.",
         "targetAbi": "12.4.0.0",
