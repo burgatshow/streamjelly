@@ -8,6 +8,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.8.0] – 2026-11-21
+#### Changed
+- New look, borrowed from SeeJelly: glass panels with soft blur and rounded corners on a slowly drifting violet / cyan glow, the StreamJelly jellyfish and a gradient wordmark in the page header, totals as glass tiles, pill-shaped buttons and tabs (the selected tab is white), switches instead of checkboxes in the settings, cyan accent, gradient progress bars.
+- Collapsed cards lift and get a light sheen when hovered or focused.
+- *All streams*: rounded rows, the ones in use framed in cyan with a filled *in use* tag.
+- The live numbers and the approximate preview are in the header of the expanded view (this part of 1.7.1 was missing from the released page).
+- Motion is off when the system asks for reduced motion.
+
 ### [1.7.2] – 2026-11-10
 #### Fixed
 - Hotfix release: the 1.7.1 release package on GitHub was broken. 1.7.2 contains the same changes as 1.7.1; the 1.7.1 entry was removed from the plugin repository (`manifest.json`).
@@ -94,6 +102,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.8.0] – 2026-11-21
+#### Változott
+- Új megjelenés a SeeJelly mintájára: üvegszerű, enyhén elmosott, lekerekített panelek lassan mozgó lila / cián derengésen, a StreamJelly medúza és színátmenetes felirat a fejlécben, az összesítők üveg csempéken, kapszula alakú gombok és fülek (a kiválasztott fül fehér), kapcsolók jelölőnégyzetek helyett a beállításokban, cián kiemelőszín, színátmenetes haladásjelzők.
+- Az összecsukott kártyák rámutatáskor vagy fókuszban kissé megemelkednek és felcsillannak.
+- *Összes stream*: lekerekített sorok, a használatban lévők cián kerettel és kitöltött *használatban* címkével.
+- Az élő számok és a megközelítő előnézet a kibontott nézet fejlécében vannak (az 1.7.1-ből ez a rész kimaradt a kiadott oldalból).
+- Ha a rendszer csökkentett mozgást kér, az animációk kikapcsolnak.
 
 ### [1.7.2] – 2026-11-10
 #### Javítva

@@ -124,10 +124,13 @@
 #StreamJellyPage .si-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1em; padding: 0 1.6em 1.4em; }
 #StreamJellyPage .si-panel { border: 1px solid var(--si-line); border-radius: 12px; padding: 1em 1.2em 1.1em; background: rgba(255,255,255,.02); min-width: 0; }
 #StreamJellyPage .si-panel > h3 { font-size: .95em; font-weight: 650; margin: 0 0 .5em; }
-#StreamJellyPage .si-panel .si-preview { width: 100%; max-width: 360px; margin: .2em 0 1em; text-align: left; }
-#StreamJellyPage .si-panel .si-preview-none { max-width: none; text-align: left; margin-bottom: .8em; }
-#StreamJellyPage .si-live { display: grid; grid-template-columns: 1fr auto; gap: 0; margin: 0; font-size: .9em; max-width: 560px; }
-#StreamJellyPage .si-live dt, #StreamJellyPage .si-live dd { padding: .5em 0; border-top: 1px solid var(--si-faint); }
+#StreamJellyPage .si-hlive { flex: none; align-self: center; display: flex; gap: 1em; align-items: center; padding: .7em .9em; border-radius: 12px; background: rgba(16,18,22,.62); border: 1px solid var(--si-line); backdrop-filter: blur(6px); }
+#StreamJellyPage .si-hlive .si-preview { width: 190px; }
+#StreamJellyPage .si-hlive .si-preview-none { max-width: 150px; text-align: left; }
+#StreamJellyPage .si-live { display: grid; grid-template-columns: auto auto; gap: 0; margin: 0; font-size: .8em; min-width: 210px; }
+#StreamJellyPage .si-live dt, #StreamJellyPage .si-live dd { padding: .28em 0; border-top: 1px solid var(--si-faint); }
+#StreamJellyPage .si-live dt { color: var(--si-muted); }
+#StreamJellyPage .si-live dd { padding-left: 1.4em; }
 #StreamJellyPage .si-live dt:first-of-type, #StreamJellyPage .si-live dt:first-of-type + dd { border-top: 0; }
 #StreamJellyPage .si-live dd { text-align: right; font-weight: 650; }
 #StreamJellyPage .si-live dd.hw { color: var(--si-hw); }
@@ -173,12 +176,18 @@
 #StreamJellyPage .si-error { padding: 1em 1.2em; border-radius: 10px; background: rgba(255,111,97,.12); color: #ffb3aa; margin-bottom: 1.5em; }
 #StreamJellyPage button:focus-visible, #StreamJellyPage summary:focus-visible, #StreamJellyPage .si-card:focus-visible, #StreamJellyPage input:focus-visible { outline: 2px solid var(--si-brand); outline-offset: 2px; }
 
+@media (max-width: 1100px) {
+    #StreamJellyPage .si-hero { flex-wrap: wrap; }
+    #StreamJellyPage .si-hlive { order: 3; }
+}
 @media (max-width: 760px) {
     #StreamJellyPage .si { padding: 1em .8em 3em; }
     #StreamJellyPage .si-totals { margin-left: 0; }
     #StreamJellyPage .si-hero { flex-wrap: wrap; padding: 1.2em; }
     #StreamJellyPage .si-poster { width: 64px; }
-    #StreamJellyPage .si-preview { width: 100%; max-width: 320px; }
+    #StreamJellyPage .si-hlive { width: 100%; flex-wrap: wrap; }
+    #StreamJellyPage .si-hlive .si-preview { width: 100%; max-width: 320px; }
+    #StreamJellyPage .si-live { width: 100%; grid-template-columns: 1fr auto; }
     #StreamJellyPage .si-mode { text-align: left; width: 100%; }
     #StreamJellyPage .si-time, #StreamJellyPage .si-tabs, #StreamJellyPage .si-tabpanel { padding-left: 1.2em; padding-right: 1.2em; }
     #StreamJellyPage .si-body { padding: 0 1.2em 1.2em; }
@@ -488,6 +497,7 @@
             + (s.deviceName ? '<span class="si-chip">' + esc(s.deviceName) + '</span>' : '')
             + (s.remoteEndPoint ? '<span class="si-chip">' + esc(s.remoteEndPoint) + '</span>' : '')
             + '</div></div>';
+        h += '<div class="si-hlive">' + preview(s) + liveList(s, job, mode) + '</div>';
         h += '<div class="si-mode"><div class="si-actions"><span class="si-mode-name m-' + esc(mode) + '">' + esc(modeName[mode] || mode) + '</span>'
             + '<button type="button" class="si-collapse" data-toggle="' + esc(s.sessionId) + '" aria-expanded="true">' + esc(t('collapse')) + '</button></div>'
             + '<div class="si-mode-note">' + esc(modeNote[mode] || '') + '</div></div>';
@@ -498,7 +508,7 @@
             + '<div class="si-track" title="' + esc(t('track') + (buf ? t('track_buf') : '')) + '"><i style="width:' + buf.toFixed(1) + '%"></i><b style="width:' + pct.toFixed(1) + '%"></b></div>'
             + '<span>' + clock(s.runTimeTicks) + '</span></div>';
 
-        // body: what goes where (left), live numbers and preview (right)
+        // body: the streams
         h += '<div class="si-body">';
         h += '<section class="si-panel"><h3>' + esc(t('streams_h')) + '</h3>' + lanes(s) + report(s);
         if (o.transcodeReasons && o.transcodeReasons.length) {
@@ -506,7 +516,6 @@
                 + o.transcodeReasons.map(function (r) { return '<span class="si-reason">' + esc(reasonName[r] || r) + '</span>'; }).join('') + '</div>';
         }
         h += '</section>';
-        h += '<section class="si-panel"><h3>' + esc(t('live_h')) + '</h3>' + preview(s) + liveList(s, job, mode) + '</section>';
         h += '</div>';
 
         // details as tabs; nothing open by default
