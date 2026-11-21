@@ -8,6 +8,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 
 ## English
 
+### [1.8.1] – 2026-11-21
+#### Fixed
+- The 1.8.0 package was built from an outdated dashboard page, so the new look described under 1.8.0 was missing (only the live numbers in the header made it in). 1.8.1 contains the complete 1.8.0 changes.
+
 ### [1.8.0] – 2026-11-21
 #### Changed
 - New look, borrowed from SeeJelly: glass panels with soft blur and rounded corners on a slowly drifting violet / cyan glow, the StreamJelly jellyfish and a gradient wordmark in the page header, totals as glass tiles, pill-shaped buttons and tabs (the selected tab is white), switches instead of checkboxes in the settings, cyan accent, gradient progress bars.
@@ -102,6 +106,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow the plu
 ---
 
 ## Magyar
+
+### [1.8.1] – 2026-11-21
+#### Javítva
+- Az 1.8.0 csomag egy régebbi vezérlőpult-oldalból készült, ezért az 1.8.0-nál leírt új megjelenés hiányzott belőle (csak az élő adatok fejlécbe költözése került bele). Az 1.8.1 a teljes 1.8.0-s változást tartalmazza.
 
 ### [1.8.0] – 2026-11-21
 #### Változott
